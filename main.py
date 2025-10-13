@@ -18,7 +18,7 @@ TESTNET = os.getenv("TESTNET", "False").lower() in ("1", "true", "yes")
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
-SYMBOLS = os.getenv("SYMBOLS", "AVAX/USDT:USDT,LINK/USDT:USDT,ADA/USDT:USDT,DOGE/USDT:USDT,XRP/USDT:USDT").split(",")
+SYMBOLS = os.getenv("SYMBOLS", "AVAX/USDT:USDT,LINK/USDT:USDT,ADA/USDT:USDT,DOGE/USDT:USDT,XRP/USDT:USDT,SOL/USDT:USDT,MATIC/USDT:USDT,DOT/USDT:USDT,NEAR/USDT:USDT,OP/USDT:USDT").split(",")
 TIMEFRAME = "5m"
 ORDER_SIZE_USDT = 5.0  # $5 per trade (працює для дешевих монет)
 LEVERAGE = 10
@@ -445,16 +445,22 @@ def main_loop():
             # Шукаємо сигнали
             for symbol in SYMBOLS:
                 if not can_open_new_position(symbol):
+                    print(f"⏭ Пропускаю {symbol} (вже є позиція або ліміт)")
                     continue
                 
                 try:
+                    print(f"📊 Аналіз {symbol}...")
                     df = fetch_ohlcv_df(symbol)
                     df = calculate_indicators(df)
                     sig = signal_from_df(df)
                     
+                    print(f"   Сигнал: {sig}")
+                    
                     if sig == "LONG" and can_open_new_position(symbol):
+                        print(f"🚀 Відкриваю LONG {symbol}")
                         open_position(symbol, "LONG")
                     elif sig == "SHORT" and can_open_new_position(symbol):
+                        print(f"📉 Відкриваю SHORT {symbol}")
                         open_position(symbol, "SHORT")
                 except Exception as e:
                     print(f"Помилка обробки {symbol}: {e}")
