@@ -1,0 +1,53 @@
+📋 ФАЙЛИ ДЛЯ GITHUB DEPLOY
+
+✅ ОБОВ'ЯЗКОВІ ФАЙЛИ (додати в git):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. main.py              ← Основний код бота
+2. requirements.txt     ← Python залежності
+3. Procfile            ← Команда для Railway
+4. runtime.txt         ← Версія Python
+5. .gitignore          ← Виключення файлів
+6. README.md           ← Опис проекту
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📝 КОМАНДИ ДЛЯ GIT:
+
+git add main.py
+git add requirements.txt
+git add Procfile
+git add runtime.txt
+git add .gitignore
+git add README.md
+git commit -m "Trading bot ready for deployment"
+git push origin main
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+❌ НЕ ДОДАВАТИ:
+
+- .env (секрети!)
+- trades_history.json (локальна історія)
+- __pycache__/ (кеш)
+- replit.md (тільки для Replit)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🚀 ПІСЛЯ PUSH НА GITHUB:
+
+1. Йди на Railway.com
+2. New Project → Deploy from GitHub
+3. Вибери репозиторій
+4. Variables → додай:
+   - API_KEY
+   - API_SECRET
+   - TELEGRAM_TOKEN
+   - TELEGRAM_CHAT_ID
+   - TESTNET=True
+
+5. Deploy запуститься автоматично!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📖 ДЕТАЛЬНА ІНФО: читай DEPLOY_INFO.md
