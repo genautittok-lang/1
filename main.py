@@ -18,9 +18,9 @@ TESTNET = os.getenv("TESTNET", "False").lower() in ("1", "true", "yes")
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
-SYMBOLS = os.getenv("SYMBOLS", "BTC/USDT:USDT,ETH/USDT:USDT,SOL/USDT:USDT,LINK/USDT:USDT,ADA/USDT:USDT").split(",")
+SYMBOLS = os.getenv("SYMBOLS", "SOL/USDT:USDT,LINK/USDT:USDT,ADA/USDT:USDT,DOGE/USDT:USDT,XRP/USDT:USDT").split(",")
 TIMEFRAME = "5m"
-ORDER_SIZE_USDT = 5.0
+ORDER_SIZE_USDT = 5.0  # $5 per trade (працює для дешевих монет)
 LEVERAGE = 10
 TP_PERCENT = 5.0
 SL_PERCENT = 2.0
@@ -247,7 +247,9 @@ def set_leverage(symbol, value):
     try:
         exchange.set_leverage(value, symbol)
     except Exception as e:
-        print(f"Не вдалось встановити leverage для {symbol}: {e}")
+        # Ігноруємо помилку "leverage not modified" - плече вже встановлено
+        if "110043" not in str(e):  # retCode 110043 = leverage already set
+            print(f"Leverage warning {symbol}: {e}")
 
 def open_position(symbol, side):
     """Відкриває позицію з TP/SL на біржі"""
