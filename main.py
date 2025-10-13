@@ -54,6 +54,10 @@ exchange = ccxt.bybit({
     "apiKey": API_KEY,
     "secret": API_SECRET,
     "enableRateLimit": True,
+    "options": {
+        "defaultType": "linear",  # Для USDT Perpetual (futures)
+        "recvWindow": 10000,      # Збільшуємо час для запитів
+    }
 })
 exchange.set_sandbox_mode(TESTNET)
 
