@@ -13,7 +13,7 @@ load_dotenv()
 # ------------------ НАЛАШТУВАННЯ (міняй у env або тут) ------------------
 API_KEY = os.getenv("API_KEY")
 API_SECRET = os.getenv("API_SECRET")
-TESTNET = os.getenv("TESTNET", "True").lower() in ("1", "true", "yes")
+TESTNET = os.getenv("TESTNET", "False").lower() in ("1", "true", "yes")  # За замовчуванням MAINNET!
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
@@ -26,6 +26,7 @@ SL_PERCENT = 2.0
 MAX_CONCURRENT_POSITIONS = 10
 POLL_INTERVAL = 20         # основний цикл пауза в секундах
 HISTORY_LIMIT = 200        # скільки барів тягнути
+MIN_BALANCE_USDT = 10.0    # мінімальний баланс для торгівлі
 
 # ------------------ Превентивні перевірки ------------------
 if not API_KEY or not API_SECRET:
@@ -71,6 +72,17 @@ def now():
 open_positions = []
 
 # ------------------ Утиліти для роботи з біржею ------------------
+def get_available_balance():
+    """Отримує доступний USDT баланс для торгівлі"""
+    try:
+        balance = exchange.fetch_balance()
+        usdt_free = float(balance.get('USDT', {}).get('free', 0))
+        return usdt_free
+    except Exception as e:
+        print(f"Помилка отримання балансу: {e}")
+        return 0.0
+
+
 def fetch_ohlcv_df(symbol, timeframe=TIMEFRAME, limit=HISTORY_LIMIT):
     bars = exchange.fetch_ohlcv(symbol, timeframe=timeframe, limit=limit)
     df = pd.DataFrame(bars, columns=["timestamp", "open", "high", "low", "close", "volume"])
@@ -122,25 +134,51 @@ def set_leverage(symbol, value):
 
 def open_position(symbol, side):
     try:
+        # Отримуємо поточну ціну та розраховуємо параметри
         ticker = exchange.fetch_ticker(symbol)
         price = float(ticker['last'])
         amount = calculate_amount(ORDER_SIZE_USDT, price, LEVERAGE)
         ccxt_side = 'buy' if side == "LONG" else 'sell'
+        
+        # Розраховуємо TP/SL
+        tp = price * (1 + TP_PERCENT/100) if side == "LONG" else price * (1 - TP_PERCENT/100)
+        sl = price * (1 - SL_PERCENT/100) if side == "LONG" else price * (1 + SL_PERCENT/100)
+        
+        # Перевіряємо баланс
+        available_balance = get_available_balance()
+        required_balance = ORDER_SIZE_USDT
+        
+        # Формуємо повідомлення про сигнал
+        signal_msg = (
+            f"🔔 СИГНАЛ {side} на {symbol}\n"
+            f"💰 Ціна входу: {price:.4f} USDT\n"
+            f"📊 Розмір: {amount:.6f} {symbol.split('/')[0]} (${ORDER_SIZE_USDT} × {LEVERAGE}x)\n"
+            f"🎯 Take Profit: {tp:.4f} USDT (+{TP_PERCENT}%)\n"
+            f"🛡 Stop Loss: {sl:.4f} USDT (-{SL_PERCENT}%)\n"
+            f"💼 Баланс: {available_balance:.2f} USDT"
+        )
+        
+        # Якщо балансу недостатньо - тільки надсилаємо сигнал
+        if available_balance < required_balance:
+            signal_msg += f"\n\n⚠️ НЕДОСТАТНЬО КОШТІВ! Потрібно: ${required_balance} USDT"
+            print(f"{now()} ⚠️ Недостатньо коштів для {symbol}: {available_balance:.2f} < {required_balance}")
+            tg_send(signal_msg)
+            return False
+        
+        # Баланс є - відкриваємо позицію
+        print(f"{now()} → Відкриваємо {side} {symbol} amount={amount} price≈{price:.2f}")
+        tg_send(signal_msg + "\n\n✅ Відкриваємо позицію...")
 
-        # Поставимо плече (кілька реалізацій)
+        # Встановлюємо плече
         try:
             set_leverage(symbol, LEVERAGE)
         except Exception:
             pass
 
         # Відкриваємо ринкову позицію
-        print(f"{now()} → Відкриваємо {side} {symbol} amount={amount} price≈{price:.2f}")
-        tg_send(f"Сигнал {side} на {symbol}. Відкриваємо позицію...")
-
         order = exchange.create_market_order(symbol, ccxt_side, amount)
-        # після відкриття фіксуємо локально TP/SL
-        tp = price * (1 + TP_PERCENT/100) if side == "LONG" else price * (1 - TP_PERCENT/100)
-        sl = price * (1 - SL_PERCENT/100) if side == "LONG" else price * (1 + SL_PERCENT/100)
+        
+        # Зберігаємо локально
         pos = {
             "symbol": symbol,
             "side": 'buy' if side == "LONG" else 'sell',
@@ -151,11 +189,12 @@ def open_position(symbol, side):
             "opened_at": time.time()
         }
         open_positions.append(pos)
-        tg_send(f"Відкрито {side} {symbol}: entry={price:.2f}, TP={tp:.2f}, SL={sl:.2f}")
+        tg_send(f"✅ Позицію {side} {symbol} ВІДКРИТО!\nEntry: {price:.4f} | TP: {tp:.4f} | SL: {sl:.4f}")
         return True
+        
     except Exception as e:
         print(f"{now()} ❌ Помилка відкриття {symbol}: {e}")
-        tg_send(f"Помилка відкриття {symbol}: {e}")
+        tg_send(f"❌ Помилка відкриття {symbol}: {e}")
         return False
 
 def close_position(pos, reason="manual"):
@@ -199,7 +238,18 @@ def monitor_positions():
 
 # ------------------ Основний цикл ------------------
 def main_loop():
-    tg_send("Бот запущено (Testnet={})".format(TESTNET))
+    mode = "TESTNET" if TESTNET else "🔴 РЕАЛЬНА БІРЖА 🔴"
+    startup_msg = f"🤖 БОТ ЗАПУЩЕНО\n\nРежим: {mode}\n\n"
+    
+    if not TESTNET:
+        startup_msg += "⚠️ УВАГА! Це РЕАЛЬНА торгівля з реальними грошима!\n"
+        startup_msg += "🛡 Переконайтесь що ваш API ключ БЕЗ прав на виведення коштів!\n\n"
+    
+    startup_msg += f"💼 Активних позицій: {len(open_positions)}\n"
+    startup_msg += f"📊 Моніторинг: {', '.join(SYMBOLS)}\n"
+    startup_msg += f"⏱ Інтервал: {POLL_INTERVAL}s"
+    
+    tg_send(startup_msg)
     print("=== Старт бот-циклу ===")
     while True:
         try:
