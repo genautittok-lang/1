@@ -1,4 +1,4 @@
-[RAILWAY.md](https://github.com/user-attachments/files/22889125/RAILWAY.md)
+[RAILWAY (1).md](https://github.com/user-attachments/files/22891825/RAILWAY.1.md)
 # 🚂 Розгортання на Railway.com
 
 Детальна інструкція як розгорнути торговий бот на Railway.com
