@@ -55,8 +55,10 @@ exchange = ccxt.bybit({
     "secret": API_SECRET,
     "enableRateLimit": True,
     "options": {
-        "defaultType": "linear",  # Для USDT Perpetual (futures)
-        "recvWindow": 10000,      # Збільшуємо час для запитів
+        "defaultType": "swap",           # Для Unified Trading Account
+        "enableUnifiedAccount": True,    # Вмикаємо Unified Account mode
+        "enableUnifiedMargin": True,     # Unified margin
+        "recvWindow": 10000,             # Збільшуємо час для запитів
     }
 })
 exchange.set_sandbox_mode(TESTNET)
@@ -111,11 +113,11 @@ def calculate_amount(order_usdt, price, leverage=LEVERAGE):
 # ------------------ Торгові операції ------------------
 def set_leverage(symbol, value):
     try:
-        # best effort — може відрізнятись по API версії
-        market_symbol = symbol.replace('/', '')
-        exchange.private_post_position_set_leverage({'symbol': market_symbol, 'buy_leverage': value, 'sell_leverage': value})
-    except Exception:
-        # деякі реалізації ccxt/bybit мають інший endpoint — ігноруємо помилку
+        # Для Unified Trading Account використовуємо set_leverage
+        exchange.set_leverage(value, symbol)
+    except Exception as e:
+        # Якщо не вдалось встановити, продовжуємо без плеча (буде default)
+        print(f"Не вдалось встановити leverage для {symbol}: {e}")
         pass
 
 def open_position(symbol, side):
