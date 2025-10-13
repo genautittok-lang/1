@@ -18,7 +18,7 @@ TESTNET = os.getenv("TESTNET", "False").lower() in ("1", "true", "yes")
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
-SYMBOLS = os.getenv("SYMBOLS", "SOL/USDT:USDT,LINK/USDT:USDT,ADA/USDT:USDT,DOGE/USDT:USDT,XRP/USDT:USDT").split(",")
+SYMBOLS = os.getenv("SYMBOLS", "AVAX/USDT:USDT,LINK/USDT:USDT,ADA/USDT:USDT,DOGE/USDT:USDT,XRP/USDT:USDT").split(",")
 TIMEFRAME = "5m"
 ORDER_SIZE_USDT = 5.0  # $5 per trade (працює для дешевих монет)
 LEVERAGE = 10
@@ -237,8 +237,10 @@ def can_open_new_position(symbol):
 
 def calculate_amount(order_usdt, price, leverage=LEVERAGE):
     """Розраховує кількість монет для ордера"""
-    # Сума позиції = order_usdt (без плеча, бо плече вже встановлено на рахунку)
-    amount = order_usdt / price
+    # З плечем: треба помножити на leverage щоб отримати правильну позицію
+    # Наприклад: $5 margin × 10 leverage = $50 exposure
+    position_size = order_usdt * leverage
+    amount = position_size / price
     return float(round(amount, 6))
 
 # ------------------ Торгові операції ------------------
