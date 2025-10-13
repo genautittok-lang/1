@@ -1,4 +1,4 @@
-# 1[README.md](https://github.com/user-attachments/files/22889111/README.md)
+[README (1).md](https://github.com/user-attachments/files/22891801/README.1.md)
 # 🤖 Bybit Trading Bot - EMA/RSI Strategy
 
 Автоматизований торговий бот для Bybit з технічним аналізом та Telegram сповіщеннями.
