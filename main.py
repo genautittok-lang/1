@@ -18,7 +18,7 @@ TESTNET = os.getenv("TESTNET", "False").lower() in ("1", "true", "yes")
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
-SYMBOLS = os.getenv("SYMBOLS", "AVAX/USDT:USDT,LINK/USDT:USDT,ADA/USDT:USDT,DOGE/USDT:USDT,XRP/USDT:USDT,SOL/USDT:USDT,SHIB/USDT:USDT,DOT/USDT:USDT,NEAR/USDT:USDT,OP/USDT:USDT,ARB/USDT:USDT,UNI/USDT:USDT,ATOM/USDT:USDT,LTC/USDT:USDT,APT/USDT:USDT").split(",")
+SYMBOLS = os.getenv("SYMBOLS", "AVAX/USDT:USDT,LINK/USDT:USDT,ADA/USDT:USDT,DOGE/USDT:USDT,XRP/USDT:USDT,SOL/USDT:USDT,BCH/USDT:USDT,DOT/USDT:USDT,NEAR/USDT:USDT,OP/USDT:USDT,ARB/USDT:USDT,UNI/USDT:USDT,ATOM/USDT:USDT,LTC/USDT:USDT,APT/USDT:USDT").split(",")
 TIMEFRAME = "5m"
 ORDER_SIZE_USDT = 6.0  # $6 per trade
 LEVERAGE = 10
@@ -452,9 +452,16 @@ def main_loop():
                     print(f"📊 Аналіз {symbol}...")
                     df = fetch_ohlcv_df(symbol)
                     df = calculate_indicators(df)
-                    sig = signal_from_df(df)
                     
-                    print(f"   Сигнал: {sig}")
+                    # Детальні логи індикаторів
+                    last = df.iloc[-1]
+                    print(f"   📈 Ціна: {last['close']:.4f}")
+                    print(f"   📊 EMA20: {last['EMA20']:.4f} | EMA50: {last['EMA50']:.4f}")
+                    print(f"   📉 RSI14: {last['RSI14']:.1f}")
+                    print(f"   💹 Обсяг: {last['volume']:.0f} | volEMA20: {last['volEMA20']:.0f}")
+                    
+                    sig = signal_from_df(df)
+                    print(f"   ⚡ Сигнал: {sig}")
                     
                     if sig == "LONG" and can_open_new_position(symbol):
                         print(f"🚀 Відкриваю LONG {symbol}")
