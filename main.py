@@ -18,15 +18,18 @@ TESTNET = os.getenv("TESTNET", "False").lower() in ("1", "true", "yes")
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
-SYMBOLS = os.getenv("SYMBOLS", "AVAX/USDT:USDT,LINK/USDT:USDT,ADA/USDT:USDT,DOGE/USDT:USDT,XRP/USDT:USDT,SOL/USDT:USDT,BCH/USDT:USDT,DOT/USDT:USDT,NEAR/USDT:USDT,OP/USDT:USDT,ARB/USDT:USDT,UNI/USDT:USDT,ATOM/USDT:USDT,LTC/USDT:USDT,APT/USDT:USDT").split(",")
+SYMBOLS = os.getenv("SYMBOLS", "AVAX/USDT:USDT,LINK/USDT:USDT,ADA/USDT:USDT,DOGE/USDT:USDT,XRP/USDT:USDT,SOL/USDT:USDT,DOT/USDT:USDT,NEAR/USDT:USDT,OP/USDT:USDT,ARB/USDT:USDT,UNI/USDT:USDT,ATOM/USDT:USDT,LTC/USDT:USDT,APT/USDT:USDT,TRX/USDT:USDT,ETC/USDT:USDT,FIL/USDT:USDT,ALGO/USDT:USDT,VET/USDT:USDT,HBAR/USDT:USDT,XLM/USDT:USDT,EOS/USDT:USDT,AAVE/USDT:USDT,MKR/USDT:USDT,GRT/USDT:USDT,SAND/USDT:USDT,MANA/USDT:USDT,AXS/USDT:USDT,THETA/USDT:USDT,FTM/USDT:USDT,ICP/USDT:USDT,SUSHI/USDT:USDT,SNX/USDT:USDT,COMP/USDT:USDT,YFI/USDT:USDT,ZEC/USDT:USDT,DASH/USDT:USDT,WAVES/USDT:USDT,ZIL/USDT:USDT,ENJ/USDT:USDT,BAT/USDT:USDT,CHZ/USDT:USDT,1INCH/USDT:USDT,CRV/USDT:USDT,LRC/USDT:USDT,RUNE/USDT:USDT,KAVA/USDT:USDT,CELO/USDT:USDT,BNT/USDT:USDT,OCEAN/USDT:USDT").split(",")
 TIMEFRAME = "5m"
 ORDER_SIZE_USDT = 6.0  # $6 per trade
 LEVERAGE = 10
-TP_PERCENT = 5.0
+TP_PERCENT = 5.0  # Повернуто на 5%
 SL_PERCENT = 2.0
-MAX_CONCURRENT_POSITIONS = 15
+MAX_CONCURRENT_POSITIONS = 50  # 50 монет = 50 max позицій
 POLL_INTERVAL = 20
 HISTORY_LIMIT = 200
+
+# Захист від спаму помилок
+last_balance_warning = 0  # Час останнього попередження про недостатній баланс
 
 # Файл для зберігання історії трейдів
 TRADES_HISTORY_FILE = "trades_history.json"
@@ -206,16 +209,59 @@ def fetch_ohlcv_df(symbol, timeframe=TIMEFRAME, limit=HISTORY_LIMIT):
     return df
 
 def calculate_indicators(df):
+    # Базові індикатори
     df['EMA20'] = ta.trend.ema_indicator(df['close'], window=20)
     df['EMA50'] = ta.trend.ema_indicator(df['close'], window=50)
     df['RSI14'] = ta.momentum.rsi(df['close'], window=14)
     df['volEMA20'] = df['volume'].ewm(span=20).mean()
+    
+    # ПРОФЕСІЙНІ ІНДИКАТОРИ
+    # ADX - вимірює СИЛУ тренду (ключовий фільтр!)
+    adx_indicator = ta.trend.ADXIndicator(df['high'], df['low'], df['close'], window=14)
+    df['ADX'] = adx_indicator.adx()
+    
+    # MACD - підтверджує тренд
+    macd_indicator = ta.trend.MACD(df['close'])
+    df['MACD'] = macd_indicator.macd()
+    df['MACD_signal'] = macd_indicator.macd_signal()
+    
+    # Bollinger Bands - визначає перекупленість
+    bb_indicator = ta.volatility.BollingerBands(df['close'], window=20, window_dev=2)
+    df['BB_upper'] = bb_indicator.bollinger_hband()
+    df['BB_lower'] = bb_indicator.bollinger_lband()
+    df['BB_middle'] = bb_indicator.bollinger_mavg()
+    
     return df
 
 def signal_from_df(df):
     last = df.iloc[-1]
-    long_cond = (last['EMA20'] > last['EMA50']) and (last['close'] > last['EMA20']) and (last['RSI14'] > 60) and (last['volume'] > last['volEMA20'])
-    short_cond = (last['EMA20'] < last['EMA50']) and (last['close'] < last['EMA20']) and (last['RSI14'] < 40) and (last['volume'] > last['volEMA20'])
+    
+    # ПРОФЕСІЙНА СТРАТЕГІЯ - 8 умов для максимальної точності!
+    
+    # LONG умови (8 фільтрів):
+    long_cond = (
+        (last['EMA20'] > last['EMA50']) and          # 1. Uptрend
+        (last['close'] > last['EMA20']) and          # 2. Ціна вище EMA20
+        (last['RSI14'] > 55) and                     # 3. RSI сильний (знижено з 60 для більше сигналів)
+        (last['RSI14'] < 75) and                     # 4. RSI не перегрів
+        (last['volume'] > last['volEMA20'] * 1.1) and # 5. Обсяг вище на 10%
+        (last['ADX'] > 20) and                       # 6. ТРЕНД (знижено до 20 для більше сигналів)
+        (last['MACD'] > last['MACD_signal']) and     # 7. MACD підтверджує
+        (last['close'] < last['BB_upper'])           # 8. НЕ перекуплено
+    )
+    
+    # SHORT умови (8 фільтрів):
+    short_cond = (
+        (last['EMA20'] < last['EMA50']) and          # 1. Downtrend
+        (last['close'] < last['EMA20']) and          # 2. Ціна нижче EMA20
+        (last['RSI14'] < 45) and                     # 3. RSI слабкий (підвищено з 40)
+        (last['RSI14'] > 25) and                     # 4. RSI не перепродано
+        (last['volume'] > last['volEMA20'] * 1.1) and # 5. Обсяг вище на 10%
+        (last['ADX'] > 20) and                       # 6. ТРЕНД (знижено до 20 для більше сигналів)
+        (last['MACD'] < last['MACD_signal']) and     # 7. MACD підтверджує
+        (last['close'] > last['BB_lower'])           # 8. НЕ перепродано
+    )
+    
     if long_cond:
         return "LONG"
     if short_cond:
@@ -255,12 +301,18 @@ def set_leverage(symbol, value):
 
 def open_position(symbol, side):
     """Відкриває позицію з TP/SL на біржі"""
+    global last_balance_warning
+    
     try:
         # Перевіряємо баланс
         available_balance = get_available_balance()
         if available_balance < ORDER_SIZE_USDT:
-            # Недостатньо коштів - НЕ надсилаємо сигнал, просто пропускаємо
-            print(f"{now()} ⚠️ Недостатньо коштів для {symbol}: {available_balance:.2f} < {ORDER_SIZE_USDT}")
+            # Недостатньо коштів - повідомляємо раз на 5 хвилин
+            current_time = time.time()
+            if current_time - last_balance_warning > 300:  # 5 хвилин
+                print(f"{now()} ⚠️ Недостатньо коштів: {available_balance:.2f} USDT < {ORDER_SIZE_USDT}")
+                tg_send(f"⚠️ <b>НЕДОСТАТНЬО КОШТІВ</b>\n\n💰 Баланс: {available_balance:.2f} USDT\n📊 Потрібно: {ORDER_SIZE_USDT} USDT")
+                last_balance_warning = current_time
             return False
         
         # Отримуємо ціну
@@ -453,11 +505,13 @@ def main_loop():
                     df = fetch_ohlcv_df(symbol)
                     df = calculate_indicators(df)
                     
-                    # Детальні логи індикаторів
+                    # Детальні логи ВСІХ індикаторів
                     last = df.iloc[-1]
                     print(f"   📈 Ціна: {last['close']:.4f}")
                     print(f"   📊 EMA20: {last['EMA20']:.4f} | EMA50: {last['EMA50']:.4f}")
                     print(f"   📉 RSI14: {last['RSI14']:.1f}")
+                    print(f"   💪 ADX: {last['ADX']:.1f} (тренд {'✅' if last['ADX'] > 20 else '❌'})")
+                    print(f"   📈 MACD: {last['MACD']:.4f} | Signal: {last['MACD_signal']:.4f}")
                     print(f"   💹 Обсяг: {last['volume']:.0f} | volEMA20: {last['volEMA20']:.0f}")
                     
                     sig = signal_from_df(df)
