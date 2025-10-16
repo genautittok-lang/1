@@ -18,13 +18,13 @@ TESTNET = os.getenv("TESTNET", "False").lower() in ("1", "true", "yes")
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
-SYMBOLS = os.getenv("SYMBOLS", "AVAX/USDT:USDT,LINK/USDT:USDT,ADA/USDT:USDT,DOGE/USDT:USDT,XRP/USDT:USDT,SOL/USDT:USDT,DOT/USDT:USDT,NEAR/USDT:USDT,OP/USDT:USDT,ARB/USDT:USDT,UNI/USDT:USDT,ATOM/USDT:USDT,LTC/USDT:USDT,APT/USDT:USDT,TRX/USDT:USDT,ETC/USDT:USDT,FIL/USDT:USDT,ALGO/USDT:USDT,VET/USDT:USDT,HBAR/USDT:USDT,XLM/USDT:USDT,EOS/USDT:USDT,AAVE/USDT:USDT,MKR/USDT:USDT,GRT/USDT:USDT,SAND/USDT:USDT,MANA/USDT:USDT,AXS/USDT:USDT,THETA/USDT:USDT,FTM/USDT:USDT,ICP/USDT:USDT,SUSHI/USDT:USDT,SNX/USDT:USDT,COMP/USDT:USDT,YFI/USDT:USDT,ZEC/USDT:USDT,DASH/USDT:USDT,WAVES/USDT:USDT,ZIL/USDT:USDT,ENJ/USDT:USDT,BAT/USDT:USDT,CHZ/USDT:USDT,1INCH/USDT:USDT,CRV/USDT:USDT,LRC/USDT:USDT,RUNE/USDT:USDT,KAVA/USDT:USDT,CELO/USDT:USDT,BNT/USDT:USDT,OCEAN/USDT:USDT").split(",")
+SYMBOLS = os.getenv("SYMBOLS", "BTC/USDT:USDT,ETH/USDT:USDT,SOL/USDT:USDT,BNB/USDT:USDT,XRP/USDT:USDT,ADA/USDT:USDT,AVAX/USDT:USDT,DOT/USDT:USDT,LINK/USDT:USDT,UNI/USDT:USDT,ATOM/USDT:USDT,LTC/USDT:USDT,ETC/USDT:USDT,XLM/USDT:USDT,ALGO/USDT:USDT,HBAR/USDT:USDT,VET/USDT:USDT,AAVE/USDT:USDT,ICP/USDT:USDT,APT/USDT:USDT,ARB/USDT:USDT,OP/USDT:USDT,NEAR/USDT:USDT,FIL/USDT:USDT,TRX/USDT:USDT,MATIC/USDT:USDT,SAND/USDT:USDT,MANA/USDT:USDT,AXS/USDT:USDT,THETA/USDT:USDT,SUSHI/USDT:USDT,SNX/USDT:USDT,COMP/USDT:USDT,YFI/USDT:USDT,ZEC/USDT:USDT,DASH/USDT:USDT,WAVES/USDT:USDT,ZIL/USDT:USDT,ENJ/USDT:USDT,BAT/USDT:USDT,CHZ/USDT:USDT,1INCH/USDT:USDT,CRV/USDT:USDT,LRC/USDT:USDT,RUNE/USDT:USDT,KAVA/USDT:USDT,CELO/USDT:USDT,IMX/USDT:USDT,INJ/USDT:USDT,RNDR/USDT:USDT,DOGE/USDT:USDT,SHIB/USDT:USDT,PEPE/USDT:USDT,FLOKI/USDT:USDT,BONK/USDT:USDT,WIF/USDT:USDT,MEME/USDT:USDT,BOME/USDT:USDT,ORDI/USDT:USDT,SATS/USDT:USDT,1000PEPE/USDT:USDT,LADYS/USDT:USDT,TURBO/USDT:USDT,BABYDOGE/USDT:USDT,ELON/USDT:USDT,SAMO/USDT:USDT,MYRO/USDT:USDT,WEN/USDT:USDT,MONG/USDT:USDT,GALA/USDT:USDT,APE/USDT:USDT,GMT/USDT:USDT,BLUR/USDT:USDT,SUI/USDT:USDT,SEI/USDT:USDT,TIA/USDT:USDT,JUP/USDT:USDT,STRK/USDT:USDT,PYTH/USDT:USDT,DYM/USDT:USDT,ALT/USDT:USDT").split(",")
 TIMEFRAME = "5m"
 ORDER_SIZE_USDT = 6.0  # $6 per trade
 LEVERAGE = 10
 TP_PERCENT = 5.0  # Повернуто на 5%
 SL_PERCENT = 2.0
-MAX_CONCURRENT_POSITIONS = 50  # 50 монет = 50 max позицій
+MAX_CONCURRENT_POSITIONS = 30  # 30 найкращих позицій з 80 монет
 POLL_INTERVAL = 20
 HISTORY_LIMIT = 200
 
@@ -212,6 +212,7 @@ def calculate_indicators(df):
     # Базові індикатори
     df['EMA20'] = ta.trend.ema_indicator(df['close'], window=20)
     df['EMA50'] = ta.trend.ema_indicator(df['close'], window=50)
+    df['EMA200'] = ta.trend.ema_indicator(df['close'], window=200)  # ПРО: Глобальний тренд
     df['RSI14'] = ta.momentum.rsi(df['close'], window=14)
     df['volEMA20'] = df['volume'].ewm(span=20).mean()
     
@@ -219,6 +220,10 @@ def calculate_indicators(df):
     # ADX - вимірює СИЛУ тренду (ключовий фільтр!)
     adx_indicator = ta.trend.ADXIndicator(df['high'], df['low'], df['close'], window=14)
     df['ADX'] = adx_indicator.adx()
+    
+    # ATR - фільтр волатильності (уникати флету!)
+    atr_indicator = ta.volatility.AverageTrueRange(df['high'], df['low'], df['close'], window=14)
+    df['ATR'] = atr_indicator.average_true_range()
     
     # MACD - підтверджує тренд
     macd_indicator = ta.trend.MACD(df['close'])
@@ -233,33 +238,58 @@ def calculate_indicators(df):
     
     return df
 
-def signal_from_df(df):
+def signal_from_df(df, symbol="", btc_rsi=None):
     last = df.iloc[-1]
+    prev = df.iloc[-2]  # ПРО: Попередня свічка для підтвердження
     
-    # ПРОФЕСІЙНА СТРАТЕГІЯ - 8 умов для максимальної точності!
+    # ПРО ФІЛЬТР 1: ATR - уникати флету (волатильність має бути достатня)
+    atr_min = last['close'] * 0.002  # ATR має бути >0.2% від ціни
+    if last['ATR'] < atr_min:
+        return "NONE"  # Флет, пропускаємо
     
-    # LONG умови (8 фільтрів):
+    # ПРО ФІЛЬТР 2: EMA200 - глобальний тренд
+    ema200_long_allowed = last['close'] > last['EMA200']  # Дозволено LONG тільки вище EMA200
+    ema200_short_allowed = last['close'] < last['EMA200']  # Дозволено SHORT тільки нижче EMA200
+    
+    # ПРО ФІЛЬТР 3: BTC фільтр для альткоїнів (80% альтів ідуть за BTC)
+    btc_allows_long = True
+    btc_allows_short = True
+    if btc_rsi is not None and symbol != "BTC/USDT:USDT":
+        if btc_rsi < 45:  # BTC слабкий - не відкривати LONG по альтах
+            btc_allows_long = False
+        if btc_rsi > 65:  # BTC сильний - не відкривати SHORT по альтах
+            btc_allows_short = False
+    
+    # ПРОФЕСІЙНА СТРАТЕГІЯ - 11 умов для максимальної точності!
+    
+    # LONG умови (11 фільтрів - ПРО ВЕРСІЯ):
     long_cond = (
         (last['EMA20'] > last['EMA50']) and          # 1. Uptрend
         (last['close'] > last['EMA20']) and          # 2. Ціна вище EMA20
-        (last['RSI14'] > 55) and                     # 3. RSI сильний (знижено з 60 для більше сигналів)
-        (last['RSI14'] < 75) and                     # 4. RSI не перегрів
-        (last['volume'] > last['volEMA20'] * 1.1) and # 5. Обсяг вище на 10%
-        (last['ADX'] > 20) and                       # 6. ТРЕНД (знижено до 20 для більше сигналів)
+        (last['RSI14'] > 60) and                     # 3. RSI сильний
+        (last['RSI14'] < 70) and                     # 4. RSI не перегрів
+        (last['volume'] > last['volEMA20'] * 1.3) and # 5. Обсяг вище на 30%
+        (last['ADX'] > 25) and                       # 6. СИЛЬНИЙ ТРЕНД
         (last['MACD'] > last['MACD_signal']) and     # 7. MACD підтверджує
-        (last['close'] < last['BB_upper'])           # 8. НЕ перекуплено
+        (last['close'] < last['BB_upper']) and       # 8. НЕ перекуплено
+        ema200_long_allowed and                      # 9. ПРО: EMA200 дозволяє LONG
+        btc_allows_long and                          # 10. ПРО: BTC не блокує LONG
+        (prev['close'] < last['close'])              # 11. ПРО: Candle confirmation (зростання)
     )
     
-    # SHORT умови (8 фільтрів):
+    # SHORT умови (11 фільтрів - ПРО ВЕРСІЯ):
     short_cond = (
         (last['EMA20'] < last['EMA50']) and          # 1. Downtrend
         (last['close'] < last['EMA20']) and          # 2. Ціна нижче EMA20
-        (last['RSI14'] < 45) and                     # 3. RSI слабкий (підвищено з 40)
-        (last['RSI14'] > 25) and                     # 4. RSI не перепродано
-        (last['volume'] > last['volEMA20'] * 1.1) and # 5. Обсяг вище на 10%
-        (last['ADX'] > 20) and                       # 6. ТРЕНД (знижено до 20 для більше сигналів)
+        (last['RSI14'] < 40) and                     # 3. RSI слабкий
+        (last['RSI14'] > 30) and                     # 4. RSI не перепродано
+        (last['volume'] > last['volEMA20'] * 1.3) and # 5. Обсяг вище на 30%
+        (last['ADX'] > 25) and                       # 6. СИЛЬНИЙ ТРЕНД
         (last['MACD'] < last['MACD_signal']) and     # 7. MACD підтверджує
-        (last['close'] > last['BB_lower'])           # 8. НЕ перепродано
+        (last['close'] > last['BB_lower']) and       # 8. НЕ перепродано
+        ema200_short_allowed and                     # 9. ПРО: EMA200 дозволяє SHORT
+        btc_allows_short and                         # 10. ПРО: BTC не блокує SHORT
+        (prev['close'] > last['close'])              # 11. ПРО: Candle confirmation (падіння)
     )
     
     if long_cond:
@@ -494,6 +524,16 @@ def main_loop():
             # Обробляємо кнопки Telegram
             handle_telegram_callback()
             
+            # ПРО ФІЛЬТР: Отримуємо BTC RSI для альткоїнів
+            btc_rsi = None
+            try:
+                btc_df = fetch_ohlcv_df("BTC/USDT:USDT")
+                btc_df = calculate_indicators(btc_df)
+                btc_rsi = btc_df.iloc[-1]['RSI14']
+                print(f"📊 BTC RSI: {btc_rsi:.1f}")
+            except Exception as e:
+                print(f"⚠️ Не вдалось отримати BTC RSI: {e}")
+            
             # Шукаємо сигнали
             for symbol in SYMBOLS:
                 if not can_open_new_position(symbol):
@@ -505,16 +545,17 @@ def main_loop():
                     df = fetch_ohlcv_df(symbol)
                     df = calculate_indicators(df)
                     
-                    # Детальні логи ВСІХ індикаторів
+                    # Детальні логи ВСІХ індикаторів (ПРО версія)
                     last = df.iloc[-1]
                     print(f"   📈 Ціна: {last['close']:.4f}")
-                    print(f"   📊 EMA20: {last['EMA20']:.4f} | EMA50: {last['EMA50']:.4f}")
+                    print(f"   📊 EMA20: {last['EMA20']:.4f} | EMA50: {last['EMA50']:.4f} | EMA200: {last['EMA200']:.4f}")
                     print(f"   📉 RSI14: {last['RSI14']:.1f}")
-                    print(f"   💪 ADX: {last['ADX']:.1f} (тренд {'✅' if last['ADX'] > 20 else '❌'})")
+                    print(f"   💪 ADX: {last['ADX']:.1f} (сильний тренд {'✅' if last['ADX'] > 25 else '❌'})")
+                    print(f"   🔥 ATR: {last['ATR']:.4f} (волатильність {'✅' if last['ATR'] > last['close']*0.002 else '❌'})")
                     print(f"   📈 MACD: {last['MACD']:.4f} | Signal: {last['MACD_signal']:.4f}")
                     print(f"   💹 Обсяг: {last['volume']:.0f} | volEMA20: {last['volEMA20']:.0f}")
                     
-                    sig = signal_from_df(df)
+                    sig = signal_from_df(df, symbol=symbol, btc_rsi=btc_rsi)
                     print(f"   ⚡ Сигнал: {sig}")
                     
                     if sig == "LONG" and can_open_new_position(symbol):
