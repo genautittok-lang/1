@@ -18,21 +18,22 @@ TESTNET = os.getenv("TESTNET", "False").lower() in ("1", "true", "yes")
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
-SYMBOLS = os.getenv("SYMBOLS", "BTC/USDT:USDT,ETH/USDT:USDT,SOL/USDT:USDT,BNB/USDT:USDT,XRP/USDT:USDT,ADA/USDT:USDT,AVAX/USDT:USDT,DOT/USDT:USDT,LINK/USDT:USDT,UNI/USDT:USDT,ATOM/USDT:USDT,LTC/USDT:USDT,ETC/USDT:USDT,XLM/USDT:USDT,ALGO/USDT:USDT,HBAR/USDT:USDT,VET/USDT:USDT,AAVE/USDT:USDT,ICP/USDT:USDT,APT/USDT:USDT,ARB/USDT:USDT,OP/USDT:USDT,NEAR/USDT:USDT,FIL/USDT:USDT,TRX/USDT:USDT,MATIC/USDT:USDT,SAND/USDT:USDT,MANA/USDT:USDT,AXS/USDT:USDT,THETA/USDT:USDT,SUSHI/USDT:USDT,SNX/USDT:USDT,COMP/USDT:USDT,YFI/USDT:USDT,ZEC/USDT:USDT,DASH/USDT:USDT,WAVES/USDT:USDT,ZIL/USDT:USDT,ENJ/USDT:USDT,BAT/USDT:USDT,CHZ/USDT:USDT,1INCH/USDT:USDT,CRV/USDT:USDT,LRC/USDT:USDT,RUNE/USDT:USDT,KAVA/USDT:USDT,CELO/USDT:USDT,IMX/USDT:USDT,INJ/USDT:USDT,RNDR/USDT:USDT,DOGE/USDT:USDT,SHIB/USDT:USDT,PEPE/USDT:USDT,FLOKI/USDT:USDT,BONK/USDT:USDT,WIF/USDT:USDT,MEME/USDT:USDT,BOME/USDT:USDT,ORDI/USDT:USDT,SATS/USDT:USDT,1000PEPE/USDT:USDT,LADYS/USDT:USDT,TURBO/USDT:USDT,BABYDOGE/USDT:USDT,ELON/USDT:USDT,SAMO/USDT:USDT,MYRO/USDT:USDT,WEN/USDT:USDT,MONG/USDT:USDT,GALA/USDT:USDT,APE/USDT:USDT,GMT/USDT:USDT,BLUR/USDT:USDT,SUI/USDT:USDT,SEI/USDT:USDT,TIA/USDT:USDT,JUP/USDT:USDT,STRK/USDT:USDT,PYTH/USDT:USDT,DYM/USDT:USDT,ALT/USDT:USDT").split(",")
+SYMBOLS = os.getenv("SYMBOLS", "BTC/USDT:USDT,ETH/USDT:USDT,SOL/USDT:USDT,BNB/USDT:USDT,XRP/USDT:USDT,ADA/USDT:USDT,AVAX/USDT:USDT,DOT/USDT:USDT,LINK/USDT:USDT,UNI/USDT:USDT,ATOM/USDT:USDT,LTC/USDT:USDT,ETC/USDT:USDT,XLM/USDT:USDT,ALGO/USDT:USDT,HBAR/USDT:USDT,VET/USDT:USDT,AAVE/USDT:USDT,ICP/USDT:USDT,APT/USDT:USDT,ARB/USDT:USDT,OP/USDT:USDT,NEAR/USDT:USDT,FIL/USDT:USDT,TRX/USDT:USDT,MATIC/USDT:USDT,SAND/USDT:USDT,MANA/USDT:USDT,AXS/USDT:USDT,THETA/USDT:USDT,SUSHI/USDT:USDT,SNX/USDT:USDT,COMP/USDT:USDT,YFI/USDT:USDT,ZEC/USDT:USDT,DASH/USDT:USDT,WAVES/USDT:USDT,ZIL/USDT:USDT,ENJ/USDT:USDT,BAT/USDT:USDT,CHZ/USDT:USDT,1INCH/USDT:USDT,CRV/USDT:USDT,LRC/USDT:USDT,RUNE/USDT:USDT,KAVA/USDT:USDT,CELO/USDT:USDT,IMX/USDT:USDT,INJ/USDT:USDT,RNDR/USDT:USDT,DOGE/USDT:USDT,SHIB/USDT:USDT,PEPE/USDT:USDT,FLOKI/USDT:USDT,BONK/USDT:USDT,WIF/USDT:USDT,MEME/USDT:USDT,BOME/USDT:USDT,ORDI/USDT:USDT,SATS/USDT:USDT,1000PEPE/USDT:USDT,LADYS/USDT:USDT,TURBO/USDT:USDT,BABYDOGE/USDT:USDT,ELON/USDT:USDT,GALA/USDT:USDT,APE/USDT:USDT,GMT/USDT:USDT,BLUR/USDT:USDT,SUI/USDT:USDT,SEI/USDT:USDT,TIA/USDT:USDT,JUP/USDT:USDT,STRK/USDT:USDT,PYTH/USDT:USDT,DYM/USDT:USDT,ALT/USDT:USDT,GRT/USDT:USDT,FTM/USDT:USDT,MINA/USDT:USDT,QNT/USDT:USDT,FET/USDT:USDT,AGIX/USDT:USDT,ROSE/USDT:USDT,ONE/USDT:USDT,ANKR/USDT:USDT,SKL/USDT:USDT,AUDIO/USDT:USDT,CTK/USDT:USDT,AR/USDT:USDT,EGLD/USDT:USDT,STX/USDT:USDT,XTZ/USDT:USDT,AXL/USDT:USDT,CFX/USDT:USDT,LDO/USDT:USDT,PENDLE/USDT:USDT,WLD/USDT:USDT,ONDO/USDT:USDT,AUCTION/USDT:USDT,MAGIC/USDT:USDT,MASK/USDT:USDT,LPT/USDT:USDT,STORJ/USDT:USDT,NKN/USDT:USDT,JASMY/USDT:USDT,ACH/USDT:USDT").split(",")
 TIMEFRAME = "5m"
 ORDER_SIZE_USDT = 6.0  # $6 per trade
 LEVERAGE = 10
 TP_PERCENT = 5.0  # Повернуто на 5%
 SL_PERCENT = 2.0
-MAX_CONCURRENT_POSITIONS = 30  # 30 найкращих позицій з 80 монет
+MAX_CONCURRENT_POSITIONS = 20  # 20 позицій (оптимально для контролю)
 POLL_INTERVAL = 20
 HISTORY_LIMIT = 200
 
 # Захист від спаму помилок
 last_balance_warning = 0  # Час останнього попередження про недостатній баланс
 
-# Файл для зберігання історії трейдів
+# Файли для зберігання даних
 TRADES_HISTORY_FILE = "trades_history.json"
+POSITIONS_FILE = "active_positions.json"
 
 # ------------------ Превентивні перевірки ------------------
 if not API_KEY or not API_SECRET:
@@ -59,6 +60,25 @@ def save_trades_history(history):
         print(f"Помилка збереження історії: {e}")
 
 trades_history = load_trades_history()
+
+# ------------------ Локальні позиції (резервний механізм) ------------------
+def load_positions():
+    """Завантажує активні позиції з файлу"""
+    try:
+        with open(POSITIONS_FILE, 'r') as f:
+            return json.load(f)
+    except:
+        return {}
+
+def save_positions(positions):
+    """Зберігає активні позиції у файл"""
+    try:
+        with open(POSITIONS_FILE, 'w') as f:
+            json.dump(positions, f, indent=2)
+    except Exception as e:
+        print(f"Помилка збереження позицій: {e}")
+
+local_positions = load_positions()
 
 # ------------------ Telegram Bot з кнопками ------------------
 def tg_send(text, buttons=None):
@@ -260,16 +280,16 @@ def signal_from_df(df, symbol="", btc_rsi=None):
         if btc_rsi > 65:  # BTC сильний - не відкривати SHORT по альтах
             btc_allows_short = False
     
-    # ПРОФЕСІЙНА СТРАТЕГІЯ - 11 умов для максимальної точності!
+    # ОПТИМІЗОВАНА СТРАТЕГІЯ - 11 умов з М'ЯКИМИ параметрами для кращого балансу!
     
-    # LONG умови (11 фільтрів - ПРО ВЕРСІЯ):
+    # LONG умови (11 фільтрів - ОПТИМІЗОВАНО):
     long_cond = (
         (last['EMA20'] > last['EMA50']) and          # 1. Uptрend
         (last['close'] > last['EMA20']) and          # 2. Ціна вище EMA20
-        (last['RSI14'] > 60) and                     # 3. RSI сильний
-        (last['RSI14'] < 70) and                     # 4. RSI не перегрів
-        (last['volume'] > last['volEMA20'] * 1.3) and # 5. Обсяг вище на 30%
-        (last['ADX'] > 25) and                       # 6. СИЛЬНИЙ ТРЕНД
+        (last['RSI14'] > 55) and                     # 3. RSI сильний (було 60)
+        (last['RSI14'] < 75) and                     # 4. RSI не перегрів (було 70)
+        (last['volume'] > last['volEMA20'] * 1.2) and # 5. Обсяг вище на 20% (було 1.3)
+        (last['ADX'] > 20) and                       # 6. ТРЕНД (було 25)
         (last['MACD'] > last['MACD_signal']) and     # 7. MACD підтверджує
         (last['close'] < last['BB_upper']) and       # 8. НЕ перекуплено
         ema200_long_allowed and                      # 9. ПРО: EMA200 дозволяє LONG
@@ -277,14 +297,14 @@ def signal_from_df(df, symbol="", btc_rsi=None):
         (prev['close'] < last['close'])              # 11. ПРО: Candle confirmation (зростання)
     )
     
-    # SHORT умови (11 фільтрів - ПРО ВЕРСІЯ):
+    # SHORT умови (11 фільтрів - ОПТИМІЗОВАНО):
     short_cond = (
         (last['EMA20'] < last['EMA50']) and          # 1. Downtrend
         (last['close'] < last['EMA20']) and          # 2. Ціна нижче EMA20
-        (last['RSI14'] < 40) and                     # 3. RSI слабкий
-        (last['RSI14'] > 30) and                     # 4. RSI не перепродано
-        (last['volume'] > last['volEMA20'] * 1.3) and # 5. Обсяг вище на 30%
-        (last['ADX'] > 25) and                       # 6. СИЛЬНИЙ ТРЕНД
+        (last['RSI14'] < 45) and                     # 3. RSI слабкий (було 40)
+        (last['RSI14'] > 25) and                     # 4. RSI не перепродано (було 30)
+        (last['volume'] > last['volEMA20'] * 1.2) and # 5. Обсяг вище на 20% (було 1.3)
+        (last['ADX'] > 20) and                       # 6. ТРЕНД (було 25)
         (last['MACD'] < last['MACD_signal']) and     # 7. MACD підтверджує
         (last['close'] > last['BB_lower']) and       # 8. НЕ перепродано
         ema200_short_allowed and                     # 9. ПРО: EMA200 дозволяє SHORT
@@ -380,12 +400,36 @@ def open_position(symbol, side):
             
             # Використовуємо приватний метод Bybit для встановлення TP/SL
             exchange.private_post_v5_position_trading_stop(params)
-            print(f"TP/SL виставлено на біржі: TP={tp_price:.4f}, SL={sl_price:.4f}")
+            print(f"✅ TP/SL виставлено на біржі: TP={tp_price:.4f}, SL={sl_price:.4f}")
+            
+            # Зберігаємо також локально (для контролю)
+            local_positions[symbol] = {
+                'symbol': symbol,
+                'side': side,
+                'entry_price': price,
+                'tp_price': tp_price,
+                'sl_price': sl_price,
+                'amount': amount,
+                'opened_at': now(),
+                'tp_sl_on_exchange': True  # TP/SL виставлено на біржі
+            }
+            save_positions(local_positions)
             
         except Exception as e:
-            print(f"Помилка виставлення TP/SL на біржі: {e}")
-            # Fallback - зберігаємо локально для моніторингу
-            pass
+            print(f"🚨 КРИТИЧНА ПОМИЛКА: TP/SL НЕ ВИСТАВЛЕНО на біржі: {e}")
+            tg_send(f"🚨 <b>УВАГА!</b>\n\nTP/SL НЕ виставлено для {symbol}!\nБуде моніторитися локально.")
+            # Fallback - зберігаємо локально для ОБОВ'ЯЗКОВОГО моніторингу
+            local_positions[symbol] = {
+                'symbol': symbol,
+                'side': side,
+                'entry_price': price,
+                'tp_price': tp_price,
+                'sl_price': sl_price,
+                'amount': amount,
+                'opened_at': now(),
+                'tp_sl_on_exchange': False  # Позначка що TP/SL НЕ на біржі
+            }
+            save_positions(local_positions)
         
         # Надсилаємо повідомлення про відкриття
         msg = f"""✅ <b>ПОЗИЦІЮ ВІДКРИТО</b>
@@ -403,6 +447,104 @@ def open_position(symbol, side):
         print(f"{now()} ❌ Помилка відкриття {symbol}: {e}")
         tg_send(f"❌ Помилка відкриття {symbol}: {e}")
         return False
+
+def check_local_positions():
+    """Перевіряє локальні позиції та закриває їх при досягненні TP/SL"""
+    global local_positions, trades_history
+    
+    if not local_positions:
+        return
+    
+    positions_to_remove = []
+    
+    for symbol, pos in local_positions.items():
+        try:
+            # Отримуємо поточну ціну
+            ticker = exchange.fetch_ticker(symbol)
+            current_price = float(ticker['last'])
+            
+            side = pos['side']
+            entry_price = pos['entry_price']
+            tp_price = pos['tp_price']
+            sl_price = pos['sl_price']
+            amount = pos['amount']
+            
+            # Перевіряємо чи досягнуто TP або SL
+            should_close = False
+            reason = ""
+            
+            if side == "LONG":
+                if current_price >= tp_price:
+                    should_close = True
+                    reason = "TP"
+                elif current_price <= sl_price:
+                    should_close = True
+                    reason = "SL"
+            else:  # SHORT
+                if current_price <= tp_price:
+                    should_close = True
+                    reason = "TP"
+                elif current_price >= sl_price:
+                    should_close = True
+                    reason = "SL"
+            
+            if should_close:
+                # Закриваємо позицію вручну
+                print(f"🔥 ЗАКРИВАЮ {symbol} по {reason}! Ціна: {current_price:.4f}")
+                
+                # Закриваємо позицію (реверс ордер)
+                close_side = 'sell' if side == "LONG" else 'buy'
+                exchange.create_market_order(symbol, close_side, amount)
+                
+                # Розраховуємо прибуток
+                if side == "LONG":
+                    pnl = (current_price - entry_price) * amount
+                else:
+                    pnl = (entry_price - current_price) * amount
+                
+                # Оновлюємо історію
+                is_profit = pnl > 0
+                if is_profit:
+                    trades_history['wins'] = trades_history.get('wins', 0) + 1
+                else:
+                    trades_history['losses'] = trades_history.get('losses', 0) + 1
+                
+                trades_history['total_profit_usdt'] = trades_history.get('total_profit_usdt', 0.0) + pnl
+                trades_history['trades'].append({
+                    'symbol': symbol,
+                    'profit': pnl,
+                    'timestamp': now(),
+                    'reason': reason
+                })
+                save_trades_history(trades_history)
+                
+                # Повідомлення
+                profit_percent = (pnl / ORDER_SIZE_USDT) * 100
+                emoji = "✅" if is_profit else "❌"
+                
+                msg = f"""{emoji} <b>ПОЗИЦІЮ ЗАКРИТО ({reason})</b>
+
+🔸 {symbol} {side}
+💰 Вхід: {entry_price:.4f}
+💰 Вихід: {current_price:.4f}
+💵 Прибуток: {pnl:+.2f} USDT ({profit_percent:+.1f}%)
+
+⚠️ Закрито ВРУЧНУ (TP/SL не було на біржі)"""
+                
+                tg_send(msg)
+                
+                # Позначаємо для видалення
+                positions_to_remove.append(symbol)
+                
+        except Exception as e:
+            print(f"Помилка перевірки локальної позиції {symbol}: {e}")
+    
+    # Видаляємо закриті позиції
+    for symbol in positions_to_remove:
+        del local_positions[symbol]
+    
+    if positions_to_remove:
+        save_positions(local_positions)
 
 def check_closed_positions():
     """Перевіряє чи були закриті позиції і надсилає повідомлення"""
@@ -518,6 +660,9 @@ def main_loop():
     
     while True:
         try:
+            # Перевіряємо локальні позиції (якщо TP/SL не на біржі)
+            check_local_positions()
+            
             # Перевіряємо закриті позиції
             check_closed_positions()
             
