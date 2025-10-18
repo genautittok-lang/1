@@ -18,13 +18,17 @@ TESTNET = os.getenv("TESTNET", "False").lower() in ("1", "true", "yes")
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
-SYMBOLS = os.getenv("SYMBOLS", "BTC/USDT:USDT,ETH/USDT:USDT,SOL/USDT:USDT,BNB/USDT:USDT,XRP/USDT:USDT,ADA/USDT:USDT,AVAX/USDT:USDT,DOT/USDT:USDT,LINK/USDT:USDT,UNI/USDT:USDT,ATOM/USDT:USDT,LTC/USDT:USDT,ETC/USDT:USDT,XLM/USDT:USDT,ALGO/USDT:USDT,HBAR/USDT:USDT,VET/USDT:USDT,AAVE/USDT:USDT,ICP/USDT:USDT,APT/USDT:USDT,ARB/USDT:USDT,OP/USDT:USDT,NEAR/USDT:USDT,FIL/USDT:USDT,TRX/USDT:USDT,MATIC/USDT:USDT,SAND/USDT:USDT,MANA/USDT:USDT,AXS/USDT:USDT,THETA/USDT:USDT,SUSHI/USDT:USDT,SNX/USDT:USDT,COMP/USDT:USDT,YFI/USDT:USDT,ZEC/USDT:USDT,DASH/USDT:USDT,WAVES/USDT:USDT,ZIL/USDT:USDT,ENJ/USDT:USDT,BAT/USDT:USDT,CHZ/USDT:USDT,1INCH/USDT:USDT,CRV/USDT:USDT,LRC/USDT:USDT,RUNE/USDT:USDT,KAVA/USDT:USDT,CELO/USDT:USDT,IMX/USDT:USDT,INJ/USDT:USDT,RNDR/USDT:USDT,DOGE/USDT:USDT,SHIB/USDT:USDT,PEPE/USDT:USDT,FLOKI/USDT:USDT,BONK/USDT:USDT,WIF/USDT:USDT,MEME/USDT:USDT,BOME/USDT:USDT,ORDI/USDT:USDT,SATS/USDT:USDT,1000PEPE/USDT:USDT,LADYS/USDT:USDT,TURBO/USDT:USDT,BABYDOGE/USDT:USDT,ELON/USDT:USDT,GALA/USDT:USDT,APE/USDT:USDT,GMT/USDT:USDT,BLUR/USDT:USDT,SUI/USDT:USDT,SEI/USDT:USDT,TIA/USDT:USDT,JUP/USDT:USDT,STRK/USDT:USDT,PYTH/USDT:USDT,DYM/USDT:USDT,ALT/USDT:USDT,GRT/USDT:USDT,FTM/USDT:USDT,MINA/USDT:USDT,QNT/USDT:USDT,FET/USDT:USDT,AGIX/USDT:USDT,ROSE/USDT:USDT,ONE/USDT:USDT,ANKR/USDT:USDT,SKL/USDT:USDT,AUDIO/USDT:USDT,CTK/USDT:USDT,AR/USDT:USDT,EGLD/USDT:USDT,STX/USDT:USDT,XTZ/USDT:USDT,AXL/USDT:USDT,CFX/USDT:USDT,LDO/USDT:USDT,PENDLE/USDT:USDT,WLD/USDT:USDT,ONDO/USDT:USDT,AUCTION/USDT:USDT,MAGIC/USDT:USDT,MASK/USDT:USDT,LPT/USDT:USDT,STORJ/USDT:USDT,NKN/USDT:USDT,JASMY/USDT:USDT,ACH/USDT:USDT").split(",")
+# ТОП-150 НАЙЛІКВІДНІШИХ ТОКЕНІВ НА BYBIT USDT PERPETUAL (перевірено 2025-10-18)
+# Мемкоїни з малою ціною використовують формат 1000X (1000SHIB, 1000PEPE, тощо)
+DEFAULT_SYMBOLS = """BTC/USDT:USDT,ETH/USDT:USDT,SOL/USDT:USDT,BNB/USDT:USDT,XRP/USDT:USDT,ADA/USDT:USDT,AVAX/USDT:USDT,DOT/USDT:USDT,LINK/USDT:USDT,DOGE/USDT:USDT,TON/USDT:USDT,TRX/USDT:USDT,MATIC/USDT:USDT,SUI/USDT:USDT,UNI/USDT:USDT,1000PEPE/USDT:USDT,LTC/USDT:USDT,NEAR/USDT:USDT,APT/USDT:USDT,HBAR/USDT:USDT,BCH/USDT:USDT,ICP/USDT:USDT,ARB/USDT:USDT,FET/USDT:USDT,OP/USDT:USDT,STX/USDT:USDT,TAO/USDT:USDT,WIF/USDT:USDT,RNDR/USDT:USDT,FIL/USDT:USDT,AAVE/USDT:USDT,INJ/USDT:USDT,SEI/USDT:USDT,ATOM/USDT:USDT,MKR/USDT:USDT,IMX/USDT:USDT,VET/USDT:USDT,1000BONK/USDT:USDT,GRT/USDT:USDT,ALGO/USDT:USDT,1000FLOKI/USDT:USDT,TIA/USDT:USDT,ETC/USDT:USDT,RUNE/USDT:USDT,FTM/USDT:USDT,THETA/USDT:USDT,JUP/USDT:USDT,SAND/USDT:USDT,AXS/USDT:USDT,MANA/USDT:USDT,XLM/USDT:USDT,EOS/USDT:USDT,GALA/USDT:USDT,PENDLE/USDT:USDT,PYTH/USDT:USDT,ORDI/USDT:USDT,WLD/USDT:USDT,JASMY/USDT:USDT,BLUR/USDT:USDT,CRV/USDT:USDT,LDO/USDT:USDT,BRETT/USDT:USDT,APE/USDT:USDT,AR/USDT:USDT,ONDO/USDT:USDT,SNX/USDT:USDT,EGLD/USDT:USDT,BEAM/USDT:USDT,STRK/USDT:USDT,AIOZ/USDT:USDT,FLOW/USDT:USDT,ROSE/USDT:USDT,MINA/USDT:USDT,DYM/USDT:USDT,GMT/USDT:USDT,CHZ/USDT:USDT,XTZ/USDT:USDT,SUSHI/USDT:USDT,1INCH/USDT:USDT,COMP/USDT:USDT,ENJ/USDT:USDT,CELO/USDT:USDT,KAVA/USDT:USDT,ZIL/USDT:USDT,BAT/USDT:USDT,LRC/USDT:USDT,ANKR/USDT:USDT,SKL/USDT:USDT,AUDIO/USDT:USDT,STORJ/USDT:USDT,NKN/USDT:USDT,ACH/USDT:USDT,YFI/USDT:USDT,ZEC/USDT:USDT,DASH/USDT:USDT,WAVES/USDT:USDT,MASK/USDT:USDT,LPT/USDT:USDT,MAGIC/USDT:USDT,CFX/USDT:USDT,AXL/USDT:USDT,ONE/USDT:USDT,ALT/USDT:USDT,MEME/USDT:USDT,BOME/USDT:USDT,PEOPLE/USDT:USDT,IO/USDT:USDT,ZK/USDT:USDT,NOT/USDT:USDT,LISTA/USDT:USDT,ZRO/USDT:USDT,OMNI/USDT:USDT,REZ/USDT:USDT,SAGA/USDT:USDT,W/USDT:USDT,ENA/USDT:USDT,AEVO/USDT:USDT,METIS/USDT:USDT,DGB/USDT:USDT,FXS/USDT:USDT,CELR/USDT:USDT,GMX/USDT:USDT,RDNT/USDT:USDT,WOO/USDT:USDT,SFP/USDT:USDT,HOOK/USDT:USDT,ID/USDT:USDT,HIGH/USDT:USDT,GAS/USDT:USDT,LEVER/USDT:USDT,DYDX/USDT:USDT,SSV/USDT:USDT,MAV/USDT:USDT,EDU/USDT:USDT,CYBER/USDT:USDT,ARK/USDT:USDT,COMBO/USDT:USDT,VANRY/USDT:USDT,PIXEL/USDT:USDT,PORTAL/USDT:USDT,ACE/USDT:USDT,NFP/USDT:USDT,AI/USDT:USDT,XAI/USDT:USDT,MANTA/USDT:USDT,JTO/USDT:USDT,AUCTION/USDT:USDT,1000SHIB/USDT:USDT,1000SATS/USDT:USDT,TRB/USDT:USDT,CORE/USDT:USDT,AGIX/USDT:USDT"""
+
+SYMBOLS = os.getenv("SYMBOLS", DEFAULT_SYMBOLS).split(",")
 TIMEFRAME = "5m"
 ORDER_SIZE_USDT = 6.0  # $6 per trade
 LEVERAGE = 10
 TP_PERCENT = 5.0  # Повернуто на 5%
 SL_PERCENT = 2.0
-MAX_CONCURRENT_POSITIONS = 20  # 20 позицій (оптимально для контролю)
+MAX_CONCURRENT_POSITIONS = 15  # 15 позицій (баланс $90 / $6 = 15)
 POLL_INTERVAL = 20
 HISTORY_LIMIT = 200
 
@@ -262,8 +266,8 @@ def signal_from_df(df, symbol="", btc_rsi=None):
     last = df.iloc[-1]
     prev = df.iloc[-2]  # ПРО: Попередня свічка для підтвердження
     
-    # ПРО ФІЛЬТР 1: ATR - уникати флету (волатильність має бути достатня)
-    atr_min = last['close'] * 0.002  # ATR має бути >0.2% від ціни
+    # ПРО ФІЛЬТР 1: ATR - уникати флету (волатільність має бути достатня)
+    atr_min = last['close'] * 0.003  # ATR має бути >0.3% від ціни (ПОСИЛЕНО!)
     if last['ATR'] < atr_min:
         return "NONE"  # Флет, пропускаємо
     
@@ -275,41 +279,50 @@ def signal_from_df(df, symbol="", btc_rsi=None):
     btc_allows_long = True
     btc_allows_short = True
     if btc_rsi is not None and symbol != "BTC/USDT:USDT":
-        if btc_rsi < 45:  # BTC слабкий - не відкривати LONG по альтах
+        if btc_rsi < 50:  # BTC слабкий - не відкривати LONG по альтах (ПОСИЛЕНО!)
             btc_allows_long = False
-        if btc_rsi > 65:  # BTC сильний - не відкривати SHORT по альтах
+        if btc_rsi > 60:  # BTC сильний - не відкривати SHORT по альтах (ПОСИЛЕНО!)
             btc_allows_short = False
     
-    # ОПТИМІЗОВАНА СТРАТЕГІЯ - 11 умов з М'ЯКИМИ параметрами для кращого балансу!
+    # ПРО ФІЛЬТР 4: Сила тренду EMA (відстань між EMA20 і EMA50)
+    ema_distance = abs(last['EMA20'] - last['EMA50']) / last['close']
+    strong_trend = ema_distance > 0.003  # EMA20 і EMA50 мають бути розділені >0.3%
     
-    # LONG умови (11 фільтрів - ОПТИМІЗОВАНО):
+    if not strong_trend:
+        return "NONE"  # Слабкий тренд
+    
+    # ПОСИЛЕНА СТРАТЕГІЯ - 12 умов з СИЛЬНИМИ параметрами!
+    
+    # LONG умови (12 фільтрів - ПОСИЛЕНО):
     long_cond = (
-        (last['EMA20'] > last['EMA50']) and          # 1. Uptрend
+        (last['EMA20'] > last['EMA50']) and          # 1. Uptrend
         (last['close'] > last['EMA20']) and          # 2. Ціна вище EMA20
-        (last['RSI14'] > 55) and                     # 3. RSI сильний (було 60)
-        (last['RSI14'] < 75) and                     # 4. RSI не перегрів (було 70)
-        (last['volume'] > last['volEMA20'] * 1.2) and # 5. Обсяг вище на 20% (було 1.3)
-        (last['ADX'] > 20) and                       # 6. ТРЕНД (було 25)
+        (last['RSI14'] > 55) and                     # 3. RSI сильний
+        (last['RSI14'] < 70) and                     # 4. RSI не перегрів (ПОСИЛЕНО!)
+        (last['volume'] > last['volEMA20'] * 1.5) and # 5. Обсяг вище на 50% (ПОСИЛЕНО!)
+        (last['ADX'] > 30) and                       # 6. СИЛЬНИЙ ТРЕНД (ПОСИЛЕНО з 20 до 30!)
         (last['MACD'] > last['MACD_signal']) and     # 7. MACD підтверджує
-        (last['close'] < last['BB_upper']) and       # 8. НЕ перекуплено
-        ema200_long_allowed and                      # 9. ПРО: EMA200 дозволяє LONG
-        btc_allows_long and                          # 10. ПРО: BTC не блокує LONG
-        (prev['close'] < last['close'])              # 11. ПРО: Candle confirmation (зростання)
+        (last['MACD'] > 0) and                       # 8. MACD позитивний (новий фільтр!)
+        (last['close'] < last['BB_upper']) and       # 9. НЕ перекуплено
+        ema200_long_allowed and                      # 10. ПРО: EMA200 дозволяє LONG
+        btc_allows_long and                          # 11. ПРО: BTC не блокує LONG
+        (prev['close'] < last['close'])              # 12. ПРО: Candle confirmation (зростання)
     )
     
-    # SHORT умови (11 фільтрів - ОПТИМІЗОВАНО):
+    # SHORT умови (12 фільтрів - ПОСИЛЕНО):
     short_cond = (
         (last['EMA20'] < last['EMA50']) and          # 1. Downtrend
         (last['close'] < last['EMA20']) and          # 2. Ціна нижче EMA20
-        (last['RSI14'] < 45) and                     # 3. RSI слабкий (було 40)
-        (last['RSI14'] > 25) and                     # 4. RSI не перепродано (було 30)
-        (last['volume'] > last['volEMA20'] * 1.2) and # 5. Обсяг вище на 20% (було 1.3)
-        (last['ADX'] > 20) and                       # 6. ТРЕНД (було 25)
+        (last['RSI14'] < 45) and                     # 3. RSI слабкий
+        (last['RSI14'] > 30) and                     # 4. RSI не перепродано (ПОСИЛЕНО!)
+        (last['volume'] > last['volEMA20'] * 1.5) and # 5. Обсяг вище на 50% (ПОСИЛЕНО!)
+        (last['ADX'] > 30) and                       # 6. СИЛЬНИЙ ТРЕНД (ПОСИЛЕНО з 20 до 30!)
         (last['MACD'] < last['MACD_signal']) and     # 7. MACD підтверджує
-        (last['close'] > last['BB_lower']) and       # 8. НЕ перепродано
-        ema200_short_allowed and                     # 9. ПРО: EMA200 дозволяє SHORT
-        btc_allows_short and                         # 10. ПРО: BTC не блокує SHORT
-        (prev['close'] > last['close'])              # 11. ПРО: Candle confirmation (падіння)
+        (last['MACD'] < 0) and                       # 8. MACD негативний (новий фільтр!)
+        (last['close'] > last['BB_lower']) and       # 9. НЕ перепродано
+        ema200_short_allowed and                     # 10. ПРО: EMA200 дозволяє SHORT
+        btc_allows_short and                         # 11. ПРО: BTC не блокує SHORT
+        (prev['close'] > last['close'])              # 12. ПРО: Candle confirmation (падіння)
     )
     
     if long_cond:
@@ -384,52 +397,35 @@ def open_position(symbol, side):
         # Відкриваємо ринковий ордер
         order = exchange.create_market_order(symbol, ccxt_side, amount)
         
-        # Виставляємо TP і SL через Bybit API (set_position_tpsl)
-        time.sleep(0.5)  # невелика пауза
+        # Виставляємо TP і SL через Bybit API
+        time.sleep(1.0)  # пауза для обробки ордера
         
         try:
-            # Для Bybit Unified Trading використовуємо API для встановлення TP/SL на позицію
+            # Правильний формат symbol для Bybit V5 API
+            # BTC/USDT:USDT -> BTCUSDT
+            bybit_symbol = symbol.replace('/', '').replace(':USDT', '')
+            
+            # Для Bybit Unified Trading використовуємо правильні параметри
             params = {
-                'symbol': symbol.replace('/', '').replace(':USDT', ''),
-                'takeProfit': str(tp_price),
-                'stopLoss': str(sl_price),
+                'category': 'linear',
+                'symbol': bybit_symbol,
+                'takeProfit': str(round(tp_price, 4)),
+                'stopLoss': str(round(sl_price, 4)),
                 'tpTriggerBy': 'LastPrice',
                 'slTriggerBy': 'LastPrice',
-                'category': 'linear'
+                'positionIdx': 0  # 0 = One-Way Mode (обов'язково!)
             }
+            
+            print(f"Встановлюю TP/SL для {bybit_symbol}: TP={tp_price:.4f}, SL={sl_price:.4f}")
             
             # Використовуємо приватний метод Bybit для встановлення TP/SL
-            exchange.private_post_v5_position_trading_stop(params)
+            response = exchange.private_post_v5_position_trading_stop(params)
             print(f"✅ TP/SL виставлено на біржі: TP={tp_price:.4f}, SL={sl_price:.4f}")
-            
-            # Зберігаємо також локально (для контролю)
-            local_positions[symbol] = {
-                'symbol': symbol,
-                'side': side,
-                'entry_price': price,
-                'tp_price': tp_price,
-                'sl_price': sl_price,
-                'amount': amount,
-                'opened_at': now(),
-                'tp_sl_on_exchange': True  # TP/SL виставлено на біржі
-            }
-            save_positions(local_positions)
+            print(f"   Відповідь біржі: {response}")
             
         except Exception as e:
             print(f"🚨 КРИТИЧНА ПОМИЛКА: TP/SL НЕ ВИСТАВЛЕНО на біржі: {e}")
-            tg_send(f"🚨 <b>УВАГА!</b>\n\nTP/SL НЕ виставлено для {symbol}!\nБуде моніторитися локально.")
-            # Fallback - зберігаємо локально для ОБОВ'ЯЗКОВОГО моніторингу
-            local_positions[symbol] = {
-                'symbol': symbol,
-                'side': side,
-                'entry_price': price,
-                'tp_price': tp_price,
-                'sl_price': sl_price,
-                'amount': amount,
-                'opened_at': now(),
-                'tp_sl_on_exchange': False  # Позначка що TP/SL НЕ на біржі
-            }
-            save_positions(local_positions)
+            tg_send(f"🚨 <b>КРИТИЧНА ПОМИЛКА!</b>\n\nTP/SL НЕ виставлено для {symbol}!\nПомилка: {str(e)}\n\n⚠️ ЗАКРИЙТЕ ПОЗИЦІЮ ВРУЧНУ!")
         
         # Надсилаємо повідомлення про відкриття
         msg = f"""✅ <b>ПОЗИЦІЮ ВІДКРИТО</b>
@@ -448,197 +444,8 @@ def open_position(symbol, side):
         tg_send(f"❌ Помилка відкриття {symbol}: {e}")
         return False
 
-def check_local_positions():
-    """Перевіряє локальні позиції та закриває їх при досягненні TP/SL"""
-    global local_positions, trades_history
-    
-    if not local_positions:
-        return
-    
-    positions_to_remove = []
-    
-    for symbol, pos in local_positions.items():
-        try:
-            # Отримуємо поточну ціну
-            ticker = exchange.fetch_ticker(symbol)
-            current_price = float(ticker['last'])
-            
-            side = pos['side']
-            entry_price = pos['entry_price']
-            tp_price = pos['tp_price']
-            sl_price = pos['sl_price']
-            amount = pos['amount']
-            
-            # Перевіряємо чи досягнуто TP або SL
-            should_close = False
-            reason = ""
-            
-            if side == "LONG":
-                if current_price >= tp_price:
-                    should_close = True
-                    reason = "TP"
-                elif current_price <= sl_price:
-                    should_close = True
-                    reason = "SL"
-            else:  # SHORT
-                if current_price <= tp_price:
-                    should_close = True
-                    reason = "TP"
-                elif current_price >= sl_price:
-                    should_close = True
-                    reason = "SL"
-            
-            if should_close:
-                # Закриваємо позицію вручну
-                print(f"🔥 ЗАКРИВАЮ {symbol} по {reason}! Ціна: {current_price:.4f}")
-                
-                # Закриваємо позицію (реверс ордер)
-                close_side = 'sell' if side == "LONG" else 'buy'
-                exchange.create_market_order(symbol, close_side, amount)
-                
-                # Розраховуємо прибуток
-                if side == "LONG":
-                    pnl = (current_price - entry_price) * amount
-                else:
-                    pnl = (entry_price - current_price) * amount
-                
-                # Оновлюємо історію
-                is_profit = pnl > 0
-                if is_profit:
-                    trades_history['wins'] = trades_history.get('wins', 0) + 1
-                else:
-                    trades_history['losses'] = trades_history.get('losses', 0) + 1
-                
-                trades_history['total_profit_usdt'] = trades_history.get('total_profit_usdt', 0.0) + pnl
-                trades_history['trades'].append({
-                    'symbol': symbol,
-                    'profit': pnl,
-                    'timestamp': now(),
-                    'reason': reason
-                })
-                save_trades_history(trades_history)
-                
-                # Повідомлення
-                profit_percent = (pnl / ORDER_SIZE_USDT) * 100
-                emoji = "✅" if is_profit else "❌"
-                
-                msg = f"""{emoji} <b>ПОЗИЦІЮ ЗАКРИТО ({reason})</b>
-
-🔸 {symbol} {side}
-💰 Вхід: {entry_price:.4f}
-💰 Вихід: {current_price:.4f}
-💵 Прибуток: {pnl:+.2f} USDT ({profit_percent:+.1f}%)
-
-⚠️ Закрито ВРУЧНУ (TP/SL не було на біржі)"""
-                
-                tg_send(msg)
-                
-                # Позначаємо для видалення
-                positions_to_remove.append(symbol)
-                
-        except Exception as e:
-            print(f"Помилка перевірки локальної позиції {symbol}: {e}")
-    
-    # Видаляємо закриті позиції
-    for symbol in positions_to_remove:
-        del local_positions[symbol]
-    
-    if positions_to_remove:
-        save_positions(local_positions)
-
-def check_closed_positions():
-    """Перевіряє чи були закриті позиції і надсилає повідомлення"""
-    global trades_history
-    
-    try:
-        # Отримуємо історію позицій з PnL
-        for symbol in SYMBOLS:
-            try:
-                # Отримуємо закриті позиції з історії (closed PnL)
-                closed_pnl = exchange.fetch_closed_orders(symbol, limit=5)
-                
-                for trade in closed_pnl:
-                    trade_id = trade.get('id')
-                    
-                    # Перевіряємо чи вже обробляли цю позицію
-                    already_processed = any(
-                        t.get('order_id') == trade_id 
-                        for t in trades_history.get('trades', [])
-                    )
-                    
-                    if already_processed:
-                        continue
-                    
-                    # Перевіряємо чи це закрита позиція з PnL
-                    if trade.get('status') == 'closed' and trade.get('side') in ['sell', 'buy']:
-                        # Отримуємо реальний PnL з інформації про ордер
-                        info = trade.get('info', {})
-                        
-                        # Для Bybit реальний PnL в полі cumExecValue або треба розрахувати
-                        filled_qty = float(trade.get('filled', 0))
-                        avg_price = float(trade.get('average', 0))
-                        
-                        if filled_qty > 0 and avg_price > 0:
-                            # Спроба отримати PnL з API
-                            try:
-                                # Отримуємо історію PnL позицій
-                                pnl_history = exchange.fetch_my_trades(symbol, limit=10)
-                                
-                                # Шукаємо відповідний трейд
-                                pnl = 0
-                                for t in pnl_history:
-                                    if t.get('order') == trade_id:
-                                        pnl = float(t.get('info', {}).get('closedPnl', 0))
-                                        break
-                                
-                                if pnl == 0:
-                                    # Якщо не знайшли - пропускаємо
-                                    continue
-                                
-                                # Визначаємо чи це TP чи SL
-                                is_profit = pnl > 0
-                                reason = "TP" if is_profit else "SL"
-                                
-                                # Оновлюємо історію
-                                if is_profit:
-                                    trades_history['wins'] = trades_history.get('wins', 0) + 1
-                                else:
-                                    trades_history['losses'] = trades_history.get('losses', 0) + 1
-                                
-                                trades_history['total_profit_usdt'] = trades_history.get('total_profit_usdt', 0.0) + pnl
-                                
-                                # Додаємо трейд в історію
-                                trades_history['trades'].append({
-                                    'order_id': trade_id,
-                                    'symbol': symbol,
-                                    'profit': pnl,
-                                    'timestamp': now()
-                                })
-                                
-                                save_trades_history(trades_history)
-                                
-                                # Надсилаємо повідомлення
-                                profit_percent = (pnl / ORDER_SIZE_USDT) * 100
-                                emoji = "✅" if is_profit else "❌"
-                                
-                                msg = f"""{emoji} <b>ПОЗИЦІЮ ЗАКРИТО ({reason})</b>
-
-🔸 {symbol}
-💵 Прибуток: {pnl:+.2f} USDT ({profit_percent:+.1f}%)
-📊 Вхід: {avg_price:.4f}"""
-                                
-                                tg_send(msg)
-                                
-                            except Exception as e:
-                                print(f"Помилка отримання PnL: {e}")
-                                continue
-                        
-            except Exception as e:
-                print(f"Помилка перевірки закритих позицій для {symbol}: {e}")
-                continue
-                
-    except Exception as e:
-        print(f"Помилка check_closed_positions: {e}")
+# БОТ НЕ ЗАКРИВАЄ ПОЗИЦІЇ - тільки відкриває і встановлює TP/SL на біржі
+# Позиції автоматично закриваються біржею по TP/SL
 
 # ------------------ Основний цикл ------------------
 def main_loop():
@@ -660,12 +467,6 @@ def main_loop():
     
     while True:
         try:
-            # Перевіряємо локальні позиції (якщо TP/SL не на біржі)
-            check_local_positions()
-            
-            # Перевіряємо закриті позиції
-            check_closed_positions()
-            
             # Обробляємо кнопки Telegram
             handle_telegram_callback()
             
