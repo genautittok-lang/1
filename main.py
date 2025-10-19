@@ -23,7 +23,7 @@ TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
 # ТОП-150 НАЙЛІКВІДНІШИХ ТОКЕНІВ НА BYBIT USDT PERPETUAL (перевірено 2025-10-18)
 # Мемкоїни з малою ціною використовують формат 1000X (1000SHIB, 1000PEPE, тощо)
-DEFAULT_SYMBOLS = """BTC/USDT:USDT,ETH/USDT:USDT,SOL/USDT:USDT,BNB/USDT:USDT,XRP/USDT:USDT,ADA/USDT:USDT,AVAX/USDT:USDT,DOT/USDT:USDT,LINK/USDT:USDT,DOGE/USDT:USDT,TON/USDT:USDT,TRX/USDT:USDT,MATIC/USDT:USDT,SUI/USDT:USDT,UNI/USDT:USDT,1000PEPE/USDT:USDT,LTC/USDT:USDT,NEAR/USDT:USDT,APT/USDT:USDT,HBAR/USDT:USDT,BCH/USDT:USDT,ICP/USDT:USDT,ARB/USDT:USDT,SHIB/USDT:USDT,OP/USDT:USDT,STX/USDT:USDT,TAO/USDT:USDT,WIF/USDT:USDT,TWT/USDT:USDT,FIL/USDT:USDT,AAVE/USDT:USDT,INJ/USDT:USDT,SEI/USDT:USDT,ATOM/USDT:USDT,MKR/USDT:USDT,IMX/USDT:USDT,VET/USDT:USDT,1000BONK/USDT:USDT,GRT/USDT:USDT,ALGO/USDT:USDT,1000FLOKI/USDT:USDT,TIA/USDT:USDT,ETC/USDT:USDT,RUNE/USDT:USDT,FTM/USDT:USDT,THETA/USDT:USDT,JUP/USDT:USDT,SAND/USDT:USDT,AXS/USDT:USDT,MANA/USDT:USDT,XLM/USDT:USDT,EOS/USDT:USDT,GALA/USDT:USDT,PENDLE/USDT:USDT,PYTH/USDT:USDT,ORDI/USDT:USDT,WLD/USDT:USDT,JASMY/USDT:USDT,BLUR/USDT:USDT,CRV/USDT:USDT,LDO/USDT:USDT,BRETT/USDT:USDT,APE/USDT:USDT,AR/USDT:USDT,ONDO/USDT:USDT,SNX/USDT:USDT,EGLD/USDT:USDT,BEAM/USDT:USDT,STRK/USDT:USDT,AIOZ/USDT:USDT,FLOW/USDT:USDT,ROSE/USDT:USDT,MINA/USDT:USDT,DYM/USDT:USDT,GMT/USDT:USDT,CHZ/USDT:USDT,XTZ/USDT:USDT,SUSHI/USDT:USDT,1INCH/USDT:USDT,COMP/USDT:USDT,ENJ/USDT:USDT,CELO/USDT:USDT,KAVA/USDT:USDT,ZIL/USDT:USDT,BAT/USDT:USDT,LRC/USDT:USDT,ANKR/USDT:USDT,SKL/USDT:USDT,AUDIO/USDT:USDT,STORJ/USDT:USDT,NKN/USDT:USDT,ACH/USDT:USDT,YFI/USDT:USDT,ZEC/USDT:USDT,DASH/USDT:USDT,WAVES/USDT:USDT,MASK/USDT:USDT,LPT/USDT:USDT,MAGIC/USDT:USDT,CFX/USDT:USDT,AXL/USDT:USDT,ONE/USDT:USDT,ALT/USDT:USDT,MEME/USDT:USDT,BOME/USDT:USDT,PEOPLE/USDT:USDT,IO/USDT:USDT,ZK/USDT:USDT,NOT/USDT:USDT,LISTA/USDT:USDT,ZRO/USDT:USDT,OMNI/USDT:USDT,REZ/USDT:USDT,SAGA/USDT:USDT,W/USDT:USDT,ENA/USDT:USDT,AEVO/USDT:USDT,METIS/USDT:USDT,DGB/USDT:USDT,FXS/USDT:USDT,CELR/USDT:USDT,GMX/USDT:USDT,RDNT/USDT:USDT,WOO/USDT:USDT,SFP/USDT:USDT,HOOK/USDT:USDT,ID/USDT:USDT,HIGH/USDT:USDT,GAS/USDT:USDT,LEVER/USDT:USDT,DYDX/USDT:USDT,SSV/USDT:USDT,MAV/USDT:USDT,EDU/USDT:USDT,CYBER/USDT:USDT,ARK/USDT:USDT,QNT/USDT:USDT,VANRY/USDT:USDT,PIXEL/USDT:USDT,PORTAL/USDT:USDT,ACE/USDT:USDT,NFP/USDT:USDT,AI/USDT:USDT,XAI/USDT:USDT,MANTA/USDT:USDT,JTO/USDT:USDT,AUCTION/USDT:USDT,PEPE/USDT:USDT,FLOKI/USDT:USDT,TRB/USDT:USDT,CORE/USDT:USDT,AGIX/USDT:USDT"""
+DEFAULT_SYMBOLS = """BTC/USDT:USDT,ETH/USDT:USDT,SOL/USDT:USDT,BNB/USDT:USDT,XRP/USDT:USDT,ADA/USDT:USDT,AVAX/USDT:USDT,DOT/USDT:USDT,LINK/USDT:USDT,DOGE/USDT:USDT,TON/USDT:USDT,TRX/USDT:USDT,MATIC/USDT:USDT,SUI/USDT:USDT,UNI/USDT:USDT,1000PEPE/USDT:USDT,LTC/USDT:USDT,NEAR/USDT:USDT,APT/USDT:USDT,HBAR/USDT:USDT,BCH/USDT:USDT,ICP/USDT:USDT,ARB/USDT:USDT,SHIB/USDT:USDT,OP/USDT:USDT,STX/USDT:USDT,TAO/USDT:USDT,WIF/USDT:USDT,TWT/USDT:USDT,FIL/USDT:USDT,AAVE/USDT:USDT,INJ/USDT:USDT,SEI/USDT:USDT,ATOM/USDT:USDT,MKR/USDT:USDT,IMX/USDT:USDT,VET/USDT:USDT,1000BONK/USDT:USDT,GRT/USDT:USDT,ALGO/USDT:USDT,1000FLOKI/USDT:USDT,TIA/USDT:USDT,ETC/USDT:USDT,RUNE/USDT:USDT,FTM/USDT:USDT,THETA/USDT:USDT,JUP/USDT:USDT,SAND/USDT:USDT,AXS/USDT:USDT,MANA/USDT:USDT,XLM/USDT:USDT,GALA/USDT:USDT,PENDLE/USDT:USDT,PYTH/USDT:USDT,ORDI/USDT:USDT,WLD/USDT:USDT,JASMY/USDT:USDT,BLUR/USDT:USDT,CRV/USDT:USDT,LDO/USDT:USDT,BRETT/USDT:USDT,APE/USDT:USDT,AR/USDT:USDT,ONDO/USDT:USDT,SNX/USDT:USDT,EGLD/USDT:USDT,BEAM/USDT:USDT,STRK/USDT:USDT,AIOZ/USDT:USDT,FLOW/USDT:USDT,ROSE/USDT:USDT,MINA/USDT:USDT,DYM/USDT:USDT,GMT/USDT:USDT,CHZ/USDT:USDT,XTZ/USDT:USDT,SUSHI/USDT:USDT,1INCH/USDT:USDT,COMP/USDT:USDT,ENJ/USDT:USDT,CELO/USDT:USDT,KAVA/USDT:USDT,ZIL/USDT:USDT,BAT/USDT:USDT,LRC/USDT:USDT,ANKR/USDT:USDT,SKL/USDT:USDT,AUDIO/USDT:USDT,STORJ/USDT:USDT,NKN/USDT:USDT,ACH/USDT:USDT,YFI/USDT:USDT,ZEC/USDT:USDT,DASH/USDT:USDT,WAVES/USDT:USDT,MASK/USDT:USDT,LPT/USDT:USDT,MAGIC/USDT:USDT,CFX/USDT:USDT,AXL/USDT:USDT,ONE/USDT:USDT,ALT/USDT:USDT,MEME/USDT:USDT,BOME/USDT:USDT,PEOPLE/USDT:USDT,IO/USDT:USDT,ZK/USDT:USDT,NOT/USDT:USDT,LISTA/USDT:USDT,ZRO/USDT:USDT,OMNI/USDT:USDT,REZ/USDT:USDT,SAGA/USDT:USDT,W/USDT:USDT,ENA/USDT:USDT,AEVO/USDT:USDT,METIS/USDT:USDT,DGB/USDT:USDT,FXS/USDT:USDT,CELR/USDT:USDT,GMX/USDT:USDT,RDNT/USDT:USDT,WOO/USDT:USDT,SFP/USDT:USDT,HOOK/USDT:USDT,ID/USDT:USDT,HIGH/USDT:USDT,GAS/USDT:USDT,LEVER/USDT:USDT,DYDX/USDT:USDT,SSV/USDT:USDT,MAV/USDT:USDT,EDU/USDT:USDT,CYBER/USDT:USDT,ARK/USDT:USDT,QNT/USDT:USDT,VANRY/USDT:USDT,PIXEL/USDT:USDT,PORTAL/USDT:USDT,ACE/USDT:USDT,NFP/USDT:USDT,AI/USDT:USDT,XAI/USDT:USDT,MANTA/USDT:USDT,JTO/USDT:USDT,AUCTION/USDT:USDT,PEPE/USDT:USDT,FLOKI/USDT:USDT,TRB/USDT:USDT,CORE/USDT:USDT,AGIX/USDT:USDT"""
 
 SYMBOLS = os.getenv("SYMBOLS", DEFAULT_SYMBOLS).split(",")
 TIMEFRAME = "5m"
@@ -285,17 +285,15 @@ def signal_from_df(df, symbol="", btc_rsi=None):
     rsi_4bars_ago = df.iloc[-4] if len(df) >= 4 else df.iloc[0]
     atr_3bars_ago = df.iloc[-3] if len(df) >= 3 else df.iloc[0]
     
-    # ЕТАП 1: Адаптивний ATR для мемкоїнів (ціна < 0.1 = мемкоїн з 1000X)
-    min_atr_percent = 0.003 if last['close'] > 0.1 else 0.01  # 0.3% звичайні, 1% меми
-    atr_min = last['close'] * min_atr_percent
-    if last['ATR'] < atr_min:
-        return "NONE"  # Флет, пропускаємо
+    # Адаптивний ATR для мемкоїнів
+    min_atr_percent = 0.003 if last['close'] > 0.1 else 0.01
+    atr_pct = last['ATR'] / last['close'] if last['close'] > 0 else 0
     
-    # ПРО ФІЛЬТР 2: EMA200 - глобальний тренд
+    # EMA200 тренд
     ema200_long_allowed = last['close'] > last['EMA200']
     ema200_short_allowed = last['close'] < last['EMA200']
     
-    # ЕТАП 1: BTC фільтр ТІЛЬКИ для альткоїнів (skip для BTC/ETH)
+    # BTC фільтр (skip BTC/ETH)
     btc_allows_long = True
     btc_allows_short = True
     if btc_rsi is not None and symbol not in ["BTC/USDT:USDT", "ETH/USDT:USDT"]:
@@ -304,12 +302,9 @@ def signal_from_df(df, symbol="", btc_rsi=None):
         if btc_rsi > 60:
             btc_allows_short = False
     
-    # ПРО ФІЛЬТР 4: Сила тренду EMA
+    # Сила тренду EMA
     ema_distance = abs(last['EMA20'] - last['EMA50']) / last['close']
-    strong_trend = ema_distance > 0.003  # 0.3% (ПОВЕРНУТО!)
-    
-    if not strong_trend:
-        return "NONE"
+    strong_trend = ema_distance > 0.003
     
     # СТРАТЕГІЯ: 12 СТАРИХ + 3 НОВИХ + ЕТАП 1+2 = 17 ФІЛЬТРІВ!
     
@@ -333,10 +328,13 @@ def signal_from_df(df, symbol="", btc_rsi=None):
         (last['RSI14'] > rsi_4bars_ago['RSI14'] + 3) and  # 14. НОВИЙ: RSI росте!
         (last['ATR'] > atr_3bars_ago['ATR']) and     # 15. Волатильність зростає!
         # === ЕТАП 2 ===
-        (last['high'] > df['high'].iloc[-6:-1].max() if len(df) >= 6 else True)  # 16. Новий HIGH!
+        (last['high'] > df['high'].iloc[-6:-1].max() if len(df) >= 6 else True) and  # 16. Новий HIGH!
+        # === КРИТИЧНІ ФІЛЬТРИ (BUG FIX!) ===
+        (atr_pct >= min_atr_percent) and             # 17. ATR адаптивний!
+        strong_trend                                 # 18. Сильний тренд EMA!
     )
     
-    # SHORT умови (17 фільтрів):
+    # SHORT умови (17 фільтрів + ATR + Strong_trend):
     short_cond = (
         # === 12 СТАРИХ ФІЛЬТРІВ ===
         (last['EMA20'] < last['EMA50']) and          # 1. Downtrend
@@ -356,19 +354,83 @@ def signal_from_df(df, symbol="", btc_rsi=None):
         (last['RSI14'] < rsi_4bars_ago['RSI14'] - 3) and  # 14. RSI падає!
         (last['ATR'] > atr_3bars_ago['ATR']) and     # 15. Волатильність зростає!
         # === ЕТАП 2 ===
-        (last['low'] < df['low'].iloc[-6:-1].min() if len(df) >= 6 else True)  # 16. Новий LOW!
+        (last['low'] < df['low'].iloc[-6:-1].min() if len(df) >= 6 else True) and  # 16. Новий LOW!
+        # === КРИТИЧНІ ФІЛЬТРИ (BUG FIX!) ===
+        (atr_pct >= min_atr_percent) and             # 17. ATR адаптивний!
+        strong_trend                                 # 18. Сильний тренд EMA!
     )
     
+    # 🔍 DEBUG: Детальний розклад ВСІХ фільтрів (завжди показуємо!)
+    long_conditions = {
+            "1.EMA20>EMA50": last['EMA20'] > last['EMA50'],
+            "2.close>EMA20": last['close'] > last['EMA20'],
+            "3.RSI>55": last['RSI14'] > 55,
+            "4.RSI<70": last['RSI14'] < 70,
+            "5.Vol×1.5": last['volume'] > last['volEMA20'] * 1.5,
+            "6.ADX>30": last['ADX'] > 30,
+            "7.MACD_cross": last['MACD'] > last['MACD_signal'],
+            "8.MACD>0": last['MACD'] > 0,
+            "9.BB_breakout": last['close'] < last['BB_upper'] * 1.005,
+            "10.EMA200": ema200_long_allowed,
+            "11.BTC_filter": btc_allows_long,
+            "12.Candle": prev['close'] < last['close'],
+            "13.EMA5>EMA20": last['EMA5'] > last['EMA20'],
+            "14.RSI_impulse": last['RSI14'] > rsi_4bars_ago['RSI14'] + 3,
+            "15.ATR_growth": last['ATR'] > atr_3bars_ago['ATR'],
+            "16.New_HIGH": last['high'] > df['high'].iloc[-6:-1].max() if len(df) >= 6 else True,
+            "17.ATR_min": atr_pct >= min_atr_percent,
+            "18.Strong_trend": strong_trend
+        }
+    short_conditions = {
+            "1.EMA20<EMA50": last['EMA20'] < last['EMA50'],
+            "2.close<EMA20": last['close'] < last['EMA20'],
+            "3.RSI<45": last['RSI14'] < 45,
+            "4.RSI>30": last['RSI14'] > 30,
+            "5.Vol×1.5": last['volume'] > last['volEMA20'] * 1.5,
+            "6.ADX>30": last['ADX'] > 30,
+            "7.MACD_cross": last['MACD'] < last['MACD_signal'],
+            "8.MACD<0": last['MACD'] < 0,
+            "9.BB_breakout": last['close'] > last['BB_lower'] * 0.995,
+            "10.EMA200": ema200_short_allowed,
+            "11.BTC_filter": btc_allows_short,
+            "12.Candle": prev['close'] > last['close'],
+            "13.EMA5<EMA20": last['EMA5'] < last['EMA20'],
+            "14.RSI_impulse": last['RSI14'] < rsi_4bars_ago['RSI14'] - 3,
+            "15.ATR_growth": last['ATR'] > atr_3bars_ago['ATR'],
+            "16.New_LOW": last['low'] < df['low'].iloc[-6:-1].min() if len(df) >= 6 else True,
+            "17.ATR_min": atr_pct >= min_atr_percent,
+            "18.Strong_trend": strong_trend
+        }
+    
+    # Показуємо які фільтри заблокували (завжди!)
+    failed_long = [k for k, v in long_conditions.items() if not v]
+    failed_short = [k for k, v in short_conditions.items() if not v]
+    
+    if last['EMA20'] > last['EMA50'] and failed_long:
+        print(f"   ❌ LONG blocked by: {', '.join(failed_long)}")
+    if last['EMA20'] < last['EMA50'] and failed_short:
+        print(f"   ❌ SHORT blocked by: {', '.join(failed_short)}")
+    if last['EMA20'] == last['EMA50']:
+        print(f"   ⚠️ SIDEWAYS: EMA20 == EMA50 (немає тренду)")
+    
     if long_cond:
+        print(f"   🚀 LONG SIGNAL! All 17 filters passed!")
         return "LONG"
     if short_cond:
+        print(f"   📉 SHORT SIGNAL! All 17 filters passed!")
         return "SHORT"
     return "NONE"
 
-def can_open_new_position(symbol):
-    """Перевіряє чи можна відкрити нову позицію на символі"""
-    # Перевіряємо реальні позиції на біржі
-    positions = get_open_positions_from_exchange()
+def can_open_new_position(symbol, cached_positions=None):
+    """Перевіряє чи можна відкрити нову позицію на символі
+    
+    Args:
+        symbol: Символ токена
+        cached_positions: Кешовані позиції (щоб не робити 151 запит до API!)
+    """
+    # Використовуємо кешовані позиції або завантажуємо (якщо не передано)
+    positions = cached_positions if cached_positions is not None else get_open_positions_from_exchange()
+    
     for p in positions:
         if p.get('symbol') == symbol and float(p.get('contracts', 0)) > 0:
             return False
@@ -514,9 +576,13 @@ def main_loop():
             except Exception as e:
                 print(f"⚠️ Не вдалось отримати BTC RSI: {e}")
             
+            # ВИПРАВЛЕНО: Кешуємо позиції 1 раз на цикл (було 151 запит!)
+            cached_positions = get_open_positions_from_exchange()
+            print(f"📊 Відкритих позицій: {len(cached_positions)}/{MAX_CONCURRENT_POSITIONS}")
+            
             # Шукаємо сигнали
             for symbol in SYMBOLS:
-                if not can_open_new_position(symbol):
+                if not can_open_new_position(symbol, cached_positions):
                     print(f"⏭ Пропускаю {symbol} (вже є позиція або ліміт)")
                     continue
                 
@@ -525,25 +591,38 @@ def main_loop():
                     df = fetch_ohlcv_df(symbol)
                     df = calculate_indicators(df)
                     
-                    # Детальні логи ВСІХ індикаторів (ПРО версія)
+                    # Детальні логи з DEBUG (17 фільтрів)
                     last = df.iloc[-1]
-                    print(f"   📈 Ціна: {last['close']:.4f}")
-                    print(f"   📊 EMA20: {last['EMA20']:.4f} | EMA50: {last['EMA50']:.4f} | EMA200: {last['EMA200']:.4f}")
-                    print(f"   📉 RSI14: {last['RSI14']:.1f}")
-                    print(f"   💪 ADX: {last['ADX']:.1f} (сильний тренд {'✅' if last['ADX'] > 25 else '❌'})")
-                    print(f"   🔥 ATR: {last['ATR']:.4f} (волатильність {'✅' if last['ATR'] > last['close']*0.002 else '❌'})")
-                    print(f"   📈 MACD: {last['MACD']:.4f} | Signal: {last['MACD_signal']:.4f}")
-                    print(f"   💹 Обсяг: {last['volume']:.0f} | volEMA20: {last['volEMA20']:.0f}")
+                    prev = df.iloc[-2]
+                    
+                    # Адаптивний ATR для мемкоїнів
+                    min_atr_percent = 0.003 if last['close'] > 0.1 else 0.01
+                    atr_pct = (last['ATR'] / last['close'] * 100) if last['close'] > 0 else 0
+                    
+                    # Перевірка volume
+                    vol_status = "⚠️ ZERO!" if last['volume'] == 0 else f"{last['volume']:.0f}"
+                    
+                    print(f"   💰 Ціна: {last['close']:.4f}")
+                    print(f"   📊 EMA: 5={last['EMA5']:.4f} | 20={last['EMA20']:.4f} | 50={last['EMA50']:.4f} | 200={last['EMA200']:.4f}")
+                    print(f"   📉 RSI: {last['RSI14']:.1f} (need: 55-70 LONG, 30-45 SHORT)")
+                    print(f"   💪 ADX: {last['ADX']:.1f} (need >30) {'✅' if last['ADX'] > 30 else '❌'}")
+                    print(f"   🔥 ATR: {last['ATR']:.6f} = {atr_pct:.3f}% (need {min_atr_percent*100:.1f}%) {'✅' if atr_pct/100 >= min_atr_percent else '❌'}")
+                    print(f"   📈 MACD: {last['MACD']:.6f} | Signal: {last['MACD_signal']:.6f} {'✅' if last['MACD'] > last['MACD_signal'] else '❌'}")
+                    print(f"   💹 Volume: {vol_status} | volEMA20: {last['volEMA20']:.0f} (×1.5 = {last['volEMA20']*1.5:.0f}) {'✅' if last['volume'] > last['volEMA20']*1.5 else '❌'}")
                     
                     sig = signal_from_df(df, symbol=symbol, btc_rsi=btc_rsi)
                     print(f"   ⚡ Сигнал: {sig}")
                     
-                    if sig == "LONG" and can_open_new_position(symbol):
+                    if sig == "LONG" and can_open_new_position(symbol, cached_positions):
                         print(f"🚀 Відкриваю LONG {symbol}")
                         open_position(symbol, "LONG")
-                    elif sig == "SHORT" and can_open_new_position(symbol):
+                        # Оновлюємо кеш після відкриття
+                        cached_positions = get_open_positions_from_exchange()
+                    elif sig == "SHORT" and can_open_new_position(symbol, cached_positions):
                         print(f"📉 Відкриваю SHORT {symbol}")
                         open_position(symbol, "SHORT")
+                        # Оновлюємо кеш після відкриття
+                        cached_positions = get_open_positions_from_exchange()
                 except Exception as e:
                     print(f"Помилка обробки {symbol}: {e}")
                     continue
