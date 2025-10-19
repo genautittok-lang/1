@@ -331,8 +331,8 @@ def signal_from_df(df, symbol="", btc_rsi=None, btc_adx=None, ema20_15m=None, em
         (last['close'] > last['EMA20']) and          # 2. Ціна вище EMA20
         (last['RSI14'] > 55) and                     # 3. RSI сильний
         (last['RSI14'] < 70) and                     # 4. RSI не перегрів
-        (last['volume'] > last['volEMA20'] * 1.5) and # 5. Обсяг ×1.5 (ПОВЕРНУТО!)
-        (last['ADX'] > 30) and                       # 6. СИЛЬНИЙ тренд (ПОВЕРНУТО!)
+        (last['volume'] > last['volEMA20'] * 1.3) and # 5. Обсяг ×1.3 (ВАРІАНТ A)
+        (last['ADX'] > 25) and                       # 6. СИЛЬНИЙ тренд (ВАРІАНТ A)
         (last['MACD'] > last['MACD_signal']) and     # 7. MACD кросовер
         (last['MACD'] > 0) and                       # 8. MACD позитивний (ПОВЕРНУТО!)
         (last['close'] < last['BB_upper'] * 1.005) and # 9. ЕТАП 1: Breakout дозволено!
@@ -341,7 +341,7 @@ def signal_from_df(df, symbol="", btc_rsi=None, btc_adx=None, ema20_15m=None, em
         (prev['close'] < last['close']) and          # 12. Candle confirmation
         # === 3 НОВИХ ФІЛЬТРИ ===
         (last['EMA5'] > last['EMA20']) and           # 13. НОВИЙ: Короткий імпульс!
-        (last['RSI14'] > rsi_4bars_ago['RSI14'] + 3) and  # 14. НОВИЙ: RSI росте!
+        (last['RSI14'] > rsi_4bars_ago['RSI14'] + 2.5) and  # 14. RSI росте +2.5 (ВАРІАНТ A)
         (last['ATR'] > atr_3bars_ago['ATR']) and     # 15. Волатильність зростає!
         # === ЕТАП 2 ===
         (last['high'] > df['high'].iloc[-6:-1].max() if len(df) >= 6 else True) and  # 16. Новий HIGH!
@@ -359,8 +359,8 @@ def signal_from_df(df, symbol="", btc_rsi=None, btc_adx=None, ema20_15m=None, em
         (last['close'] < last['EMA20']) and          # 2. Ціна нижче EMA20
         (last['RSI14'] < 45) and                     # 3. RSI слабкий
         (last['RSI14'] > 30) and                     # 4. RSI не перепродано
-        (last['volume'] > last['volEMA20'] * 1.5) and # 5. Обсяг ×1.5 (ПОВЕРНУТО!)
-        (last['ADX'] > 30) and                       # 6. СИЛЬНИЙ тренд (ПОВЕРНУТО!)
+        (last['volume'] > last['volEMA20'] * 1.3) and # 5. Обсяг ×1.3 (ВАРІАНТ A)
+        (last['ADX'] > 25) and                       # 6. СИЛЬНИЙ тренд (ВАРІАНТ A)
         (last['MACD'] < last['MACD_signal']) and     # 7. MACD кросовер
         (last['MACD'] < 0) and                       # 8. MACD негативний (ПОВЕРНУТО!)
         (last['close'] > last['BB_lower'] * 0.995) and # 9. ЕТАП 1: Breakout дозволено!
@@ -369,7 +369,7 @@ def signal_from_df(df, symbol="", btc_rsi=None, btc_adx=None, ema20_15m=None, em
         (prev['close'] > last['close']) and          # 12. Candle confirmation
         # === 3 НОВИХ ФІЛЬТРИ ===
         (last['EMA5'] < last['EMA20']) and           # 13. Короткий імпульс вниз!
-        (last['RSI14'] < rsi_4bars_ago['RSI14'] - 3) and  # 14. RSI падає!
+        (last['RSI14'] < rsi_4bars_ago['RSI14'] - 2.5) and  # 14. RSI падає -2.5 (ВАРІАНТ A)
         (last['ATR'] > atr_3bars_ago['ATR']) and     # 15. Волатільність зростає!
         # === ЕТАП 2 ===
         (last['low'] < df['low'].iloc[-6:-1].min() if len(df) >= 6 else True) and  # 16. Новий LOW!
@@ -386,8 +386,8 @@ def signal_from_df(df, symbol="", btc_rsi=None, btc_adx=None, ema20_15m=None, em
             "2.close>EMA20": last['close'] > last['EMA20'],
             "3.RSI>55": last['RSI14'] > 55,
             "4.RSI<70": last['RSI14'] < 70,
-            "5.Vol×1.5": last['volume'] > last['volEMA20'] * 1.5,
-            "6.ADX>30": last['ADX'] > 30,
+            "5.Vol×1.3": last['volume'] > last['volEMA20'] * 1.3,
+            "6.ADX>25": last['ADX'] > 25,
             "7.MACD_cross": last['MACD'] > last['MACD_signal'],
             "8.MACD>0": last['MACD'] > 0,
             "9.BB_breakout": last['close'] < last['BB_upper'] * 1.005,
@@ -395,7 +395,7 @@ def signal_from_df(df, symbol="", btc_rsi=None, btc_adx=None, ema20_15m=None, em
             "11.BTC_filter": btc_allows_long,
             "12.Candle": prev['close'] < last['close'],
             "13.EMA5>EMA20": last['EMA5'] > last['EMA20'],
-            "14.RSI_impulse": last['RSI14'] > rsi_4bars_ago['RSI14'] + 3,
+            "14.RSI_impulse": last['RSI14'] > rsi_4bars_ago['RSI14'] + 2.5,
             "15.ATR_growth": last['ATR'] > atr_3bars_ago['ATR'],
             "16.New_HIGH": last['high'] > df['high'].iloc[-6:-1].max() if len(df) >= 6 else True,
             "17.ATR_min": atr_pct >= min_atr_percent,
@@ -407,8 +407,8 @@ def signal_from_df(df, symbol="", btc_rsi=None, btc_adx=None, ema20_15m=None, em
             "2.close<EMA20": last['close'] < last['EMA20'],
             "3.RSI<45": last['RSI14'] < 45,
             "4.RSI>30": last['RSI14'] > 30,
-            "5.Vol×1.5": last['volume'] > last['volEMA20'] * 1.5,
-            "6.ADX>30": last['ADX'] > 30,
+            "5.Vol×1.3": last['volume'] > last['volEMA20'] * 1.3,
+            "6.ADX>25": last['ADX'] > 25,
             "7.MACD_cross": last['MACD'] < last['MACD_signal'],
             "8.MACD<0": last['MACD'] < 0,
             "9.BB_breakout": last['close'] > last['BB_lower'] * 0.995,
@@ -416,7 +416,7 @@ def signal_from_df(df, symbol="", btc_rsi=None, btc_adx=None, ema20_15m=None, em
             "11.BTC_filter": btc_allows_short,
             "12.Candle": prev['close'] > last['close'],
             "13.EMA5<EMA20": last['EMA5'] < last['EMA20'],
-            "14.RSI_impulse": last['RSI14'] < rsi_4bars_ago['RSI14'] - 3,
+            "14.RSI_impulse": last['RSI14'] < rsi_4bars_ago['RSI14'] - 2.5,
             "15.ATR_growth": last['ATR'] > atr_3bars_ago['ATR'],
             "16.New_LOW": last['low'] < df['low'].iloc[-6:-1].min() if len(df) >= 6 else True,
             "17.ATR_min": atr_pct >= min_atr_percent,
@@ -508,15 +508,30 @@ def open_position(symbol, side, atr=None):
         amount = calculate_amount(ORDER_SIZE_USDT, price, LEVERAGE)
         ccxt_side = 'buy' if side == "LONG" else 'sell'
         
-        # ⚡ ПОКРАЩЕННЯ 1: Адаптивний TP/SL на базі ATR
+        # ⚡ ПОКРАЩЕННЯ 1: Адаптивний TP/SL на базі ATR з мінімумами
+        # Мінімуми: TP >= 1.5%, SL >= 0.5%
+        MIN_TP_PERCENT = 1.5
+        MIN_SL_PERCENT = 0.5
+        
         if atr is not None and atr > 0:
             # Динамічний TP/SL: TP = entry ± ATR×3, SL = entry ± ATR×1.5
+            atr_tp_distance = atr * 3.0
+            atr_sl_distance = atr * 1.5
+            
+            # Мінімальні відстані в абсолютних значеннях
+            min_tp_distance = price * (MIN_TP_PERCENT / 100)
+            min_sl_distance = price * (MIN_SL_PERCENT / 100)
+            
+            # Використовуємо максимум з ATR та мінімуму
+            tp_distance = max(atr_tp_distance, min_tp_distance)
+            sl_distance = max(atr_sl_distance, min_sl_distance)
+            
             if side == "LONG":
-                tp_price = price + (atr * 3.0)
-                sl_price = price - (atr * 1.5)
+                tp_price = price + tp_distance
+                sl_price = price - sl_distance
             else:  # SHORT
-                tp_price = price - (atr * 3.0)
-                sl_price = price + (atr * 1.5)
+                tp_price = price - tp_distance
+                sl_price = price + sl_distance
             
             # Розраховуємо % для логування
             tp_percent = abs((tp_price - price) / price * 100)
