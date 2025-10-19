@@ -677,8 +677,13 @@ def main_loop():
                     last = df.iloc[-1]
                     prev = df.iloc[-2]
                     
-                    # Адаптивний ATR для мемкоїнів
-                    min_atr_percent = 0.003 if last['close'] > 0.1 else 0.01
+                    # Адаптивний ATR: великі монети (>$10) легше
+                    if last['close'] > 10:
+                        min_atr_percent = 0.002  # BTC, ETH, SOL - м'якше!
+                    elif last['close'] > 0.1:
+                        min_atr_percent = 0.003  # Звичайні монети
+                    else:
+                        min_atr_percent = 0.01   # Мемкоїни
                     atr_pct = (last['ATR'] / last['close'] * 100) if last['close'] > 0 else 0
                     
                     # Перевірка volume
@@ -689,10 +694,10 @@ def main_loop():
                     if ema20_15m and ema50_15m:
                         print(f"   📊 15m EMA: 20={ema20_15m:.4f} | 50={ema50_15m:.4f} {'📈' if ema20_15m > ema50_15m else '📉'}")
                     print(f"   📉 RSI: {last['RSI14']:.1f} (need: 55-70 LONG, 30-45 SHORT)")
-                    print(f"   💪 ADX: {last['ADX']:.1f} (need >30) {'✅' if last['ADX'] > 30 else '❌'}")
+                    print(f"   💪 ADX: {last['ADX']:.1f} (need >25) {'✅' if last['ADX'] > 25 else '❌'}")
                     print(f"   🔥 ATR: {last['ATR']:.6f} = {atr_pct:.3f}% (need {min_atr_percent*100:.1f}%) {'✅' if atr_pct/100 >= min_atr_percent else '❌'}")
                     print(f"   📈 MACD: {last['MACD']:.6f} | Signal: {last['MACD_signal']:.6f} {'✅' if last['MACD'] > last['MACD_signal'] else '❌'}")
-                    print(f"   💹 Volume: {vol_status} | volEMA20: {last['volEMA20']:.0f} (×1.5 = {last['volEMA20']*1.5:.0f}) {'✅' if last['volume'] > last['volEMA20']*1.5 else '❌'}")
+                    print(f"   💹 Volume: {vol_status} | volEMA20: {last['volEMA20']:.0f} (×1.25 = {last['volEMA20']*1.25:.0f}) {'✅' if last['volume'] > last['volEMA20']*1.25 else '❌'}")
                     
                     sig = signal_from_df(df, symbol=symbol, btc_rsi=btc_rsi, btc_adx=btc_adx, ema20_15m=ema20_15m, ema50_15m=ema50_15m)
                     print(f"   ⚡ Сигнал: {sig}")
