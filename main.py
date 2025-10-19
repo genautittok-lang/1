@@ -27,11 +27,11 @@ DEFAULT_SYMBOLS = """BTC/USDT:USDT,ETH/USDT:USDT,SOL/USDT:USDT,BNB/USDT:USDT,XRP
 
 SYMBOLS = os.getenv("SYMBOLS", DEFAULT_SYMBOLS).split(",")
 TIMEFRAME = "5m"
-ORDER_SIZE_USDT = 6.0  # $6 per trade
+ORDER_SIZE_USDT = 5.0  # $5 per trade
 LEVERAGE = 10
 TP_PERCENT = 5.0  # Повернуто на 5%
 SL_PERCENT = 2.0
-MAX_CONCURRENT_POSITIONS = 15  # 15 позицій (баланс $90 / $6 = 15)
+MAX_CONCURRENT_POSITIONS = 18  # 18 позицій (баланс $90 / $5 = 18)
 POLL_INTERVAL = 20
 HISTORY_LIMIT = 200
 
@@ -250,6 +250,7 @@ def fetch_ohlcv_df(symbol, timeframe=TIMEFRAME, limit=HISTORY_LIMIT):
 
 def calculate_indicators(df):
     # Базові індикатори
+    df['EMA5'] = ta.trend.ema_indicator(df['close'], window=5)    # НОВИЙ: Короткий імпульс
     df['EMA20'] = ta.trend.ema_indicator(df['close'], window=20)
     df['EMA50'] = ta.trend.ema_indicator(df['close'], window=50)
     df['EMA200'] = ta.trend.ema_indicator(df['close'], window=200)  # ПРО: Глобальний тренд
@@ -280,65 +281,82 @@ def calculate_indicators(df):
 
 def signal_from_df(df, symbol="", btc_rsi=None):
     last = df.iloc[-1]
-    prev = df.iloc[-2]  # ПРО: Попередня свічка для підтвердження
+    prev = df.iloc[-2]
+    rsi_4bars_ago = df.iloc[-4] if len(df) >= 4 else df.iloc[0]
+    atr_3bars_ago = df.iloc[-3] if len(df) >= 3 else df.iloc[0]
     
-    # ПРО ФІЛЬТР 1: ATR - уникати флету (волатільність має бути достатня)
-    atr_min = last['close'] * 0.003  # ATR має бути >0.3% від ціни (ПОСИЛЕНО!)
+    # ЕТАП 1: Адаптивний ATR для мемкоїнів (ціна < 0.1 = мемкоїн з 1000X)
+    min_atr_percent = 0.003 if last['close'] > 0.1 else 0.01  # 0.3% звичайні, 1% меми
+    atr_min = last['close'] * min_atr_percent
     if last['ATR'] < atr_min:
         return "NONE"  # Флет, пропускаємо
     
     # ПРО ФІЛЬТР 2: EMA200 - глобальний тренд
-    ema200_long_allowed = last['close'] > last['EMA200']  # Дозволено LONG тільки вище EMA200
-    ema200_short_allowed = last['close'] < last['EMA200']  # Дозволено SHORT тільки нижче EMA200
+    ema200_long_allowed = last['close'] > last['EMA200']
+    ema200_short_allowed = last['close'] < last['EMA200']
     
-    # ПРО ФІЛЬТР 3: BTC фільтр для альткоїнів (80% альтів ідуть за BTC)
+    # ЕТАП 1: BTC фільтр ТІЛЬКИ для альткоїнів (skip для BTC/ETH)
     btc_allows_long = True
     btc_allows_short = True
-    if btc_rsi is not None and symbol != "BTC/USDT:USDT":
-        if btc_rsi < 50:  # BTC слабкий - не відкривати LONG по альтах (ПОСИЛЕНО!)
+    if btc_rsi is not None and symbol not in ["BTC/USDT:USDT", "ETH/USDT:USDT"]:
+        if btc_rsi < 50:
             btc_allows_long = False
-        if btc_rsi > 60:  # BTC сильний - не відкривати SHORT по альтах (ПОСИЛЕНО!)
+        if btc_rsi > 60:
             btc_allows_short = False
     
-    # ПРО ФІЛЬТР 4: Сила тренду EMA (відстань між EMA20 і EMA50)
+    # ПРО ФІЛЬТР 4: Сила тренду EMA
     ema_distance = abs(last['EMA20'] - last['EMA50']) / last['close']
-    strong_trend = ema_distance > 0.003  # EMA20 і EMA50 мають бути розділені >0.3%
+    strong_trend = ema_distance > 0.003  # 0.3% (ПОВЕРНУТО!)
     
     if not strong_trend:
-        return "NONE"  # Слабкий тренд
+        return "NONE"
     
-    # ПОСИЛЕНА СТРАТЕГІЯ - 12 умов з СИЛЬНИМИ параметрами!
+    # СТРАТЕГІЯ: 12 СТАРИХ + 3 НОВИХ + ЕТАП 1+2 = 17 ФІЛЬТРІВ!
     
-    # LONG умови (12 фільтрів - ПОСИЛЕНО):
+    # LONG умови (17 фільтрів):
     long_cond = (
+        # === 12 СТАРИХ ФІЛЬТРІВ ===
         (last['EMA20'] > last['EMA50']) and          # 1. Uptrend
         (last['close'] > last['EMA20']) and          # 2. Ціна вище EMA20
         (last['RSI14'] > 55) and                     # 3. RSI сильний
-        (last['RSI14'] < 70) and                     # 4. RSI не перегрів (ПОСИЛЕНО!)
-        (last['volume'] > last['volEMA20'] * 1.5) and # 5. Обсяг вище на 50% (ПОСИЛЕНО!)
-        (last['ADX'] > 30) and                       # 6. СИЛЬНИЙ ТРЕНД (ПОСИЛЕНО з 20 до 30!)
-        (last['MACD'] > last['MACD_signal']) and     # 7. MACD підтверджує
-        (last['MACD'] > 0) and                       # 8. MACD позитивний (новий фільтр!)
-        (last['close'] < last['BB_upper']) and       # 9. НЕ перекуплено
-        ema200_long_allowed and                      # 10. ПРО: EMA200 дозволяє LONG
-        btc_allows_long and                          # 11. ПРО: BTC не блокує LONG
-        (prev['close'] < last['close'])              # 12. ПРО: Candle confirmation (зростання)
+        (last['RSI14'] < 70) and                     # 4. RSI не перегрів
+        (last['volume'] > last['volEMA20'] * 1.5) and # 5. Обсяг ×1.5 (ПОВЕРНУТО!)
+        (last['ADX'] > 30) and                       # 6. СИЛЬНИЙ тренд (ПОВЕРНУТО!)
+        (last['MACD'] > last['MACD_signal']) and     # 7. MACD кросовер
+        (last['MACD'] > 0) and                       # 8. MACD позитивний (ПОВЕРНУТО!)
+        (last['close'] < last['BB_upper'] * 1.005) and # 9. ЕТАП 1: Breakout дозволено!
+        ema200_long_allowed and                      # 10. EMA200 (ПОВЕРНУТО!)
+        btc_allows_long and                          # 11. BTC фільтр (ПОВЕРНУТО!)
+        (prev['close'] < last['close']) and          # 12. Candle confirmation
+        # === 3 НОВИХ ФІЛЬТРИ ===
+        (last['EMA5'] > last['EMA20']) and           # 13. НОВИЙ: Короткий імпульс!
+        (last['RSI14'] > rsi_4bars_ago['RSI14'] + 3) and  # 14. НОВИЙ: RSI росте!
+        (last['ATR'] > atr_3bars_ago['ATR']) and     # 15. Волатильність зростає!
+        # === ЕТАП 2 ===
+        (last['high'] > df['high'].iloc[-6:-1].max() if len(df) >= 6 else True)  # 16. Новий HIGH!
     )
     
-    # SHORT умови (12 фільтрів - ПОСИЛЕНО):
+    # SHORT умови (17 фільтрів):
     short_cond = (
+        # === 12 СТАРИХ ФІЛЬТРІВ ===
         (last['EMA20'] < last['EMA50']) and          # 1. Downtrend
         (last['close'] < last['EMA20']) and          # 2. Ціна нижче EMA20
         (last['RSI14'] < 45) and                     # 3. RSI слабкий
-        (last['RSI14'] > 30) and                     # 4. RSI не перепродано (ПОСИЛЕНО!)
-        (last['volume'] > last['volEMA20'] * 1.5) and # 5. Обсяг вище на 50% (ПОСИЛЕНО!)
-        (last['ADX'] > 30) and                       # 6. СИЛЬНИЙ ТРЕНД (ПОСИЛЕНО з 20 до 30!)
-        (last['MACD'] < last['MACD_signal']) and     # 7. MACD підтверджує
-        (last['MACD'] < 0) and                       # 8. MACD негативний (новий фільтр!)
-        (last['close'] > last['BB_lower']) and       # 9. НЕ перепродано
-        ema200_short_allowed and                     # 10. ПРО: EMA200 дозволяє SHORT
-        btc_allows_short and                         # 11. ПРО: BTC не блокує SHORT
-        (prev['close'] > last['close'])              # 12. ПРО: Candle confirmation (падіння)
+        (last['RSI14'] > 30) and                     # 4. RSI не перепродано
+        (last['volume'] > last['volEMA20'] * 1.5) and # 5. Обсяг ×1.5 (ПОВЕРНУТО!)
+        (last['ADX'] > 30) and                       # 6. СИЛЬНИЙ тренд (ПОВЕРНУТО!)
+        (last['MACD'] < last['MACD_signal']) and     # 7. MACD кросовер
+        (last['MACD'] < 0) and                       # 8. MACD негативний (ПОВЕРНУТО!)
+        (last['close'] > last['BB_lower'] * 0.995) and # 9. ЕТАП 1: Breakout дозволено!
+        ema200_short_allowed and                     # 10. EMA200 (ПОВЕРНУТО!)
+        btc_allows_short and                         # 11. BTC фільтр (ПОВЕРНУТО!)
+        (prev['close'] > last['close']) and          # 12. Candle confirmation
+        # === 3 НОВИХ ФІЛЬТРИ ===
+        (last['EMA5'] < last['EMA20']) and           # 13. Короткий імпульс вниз!
+        (last['RSI14'] < rsi_4bars_ago['RSI14'] - 3) and  # 14. RSI падає!
+        (last['ATR'] > atr_3bars_ago['ATR']) and     # 15. Волатильність зростає!
+        # === ЕТАП 2 ===
+        (last['low'] < df['low'].iloc[-6:-1].min() if len(df) >= 6 else True)  # 16. Новий LOW!
     )
     
     if long_cond:
