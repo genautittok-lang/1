@@ -279,7 +279,7 @@ def calculate_indicators(df):
     
     return df
 
-def signal_from_df(df, symbol="", btc_rsi=None):
+def signal_from_df(df, symbol="", btc_rsi=None, btc_adx=None, ema20_15m=None, ema50_15m=None):
     last = df.iloc[-1]
     prev = df.iloc[-2]
     rsi_4bars_ago = df.iloc[-4] if len(df) >= 4 else df.iloc[0]
@@ -293,22 +293,38 @@ def signal_from_df(df, symbol="", btc_rsi=None):
     ema200_long_allowed = last['close'] > last['EMA200']
     ema200_short_allowed = last['close'] < last['EMA200']
     
-    # BTC фільтр (skip BTC/ETH)
+    # ⚡ ПОКРАЩЕННЯ 2: BTC фільтр волатильності (skip BTC/ETH)
     btc_allows_long = True
     btc_allows_short = True
-    if btc_rsi is not None and symbol not in ["BTC/USDT:USDT", "ETH/USDT:USDT"]:
-        if btc_rsi < 50:
+    if btc_rsi is not None and btc_adx is not None and symbol not in ["BTC/USDT:USDT", "ETH/USDT:USDT"]:
+        # Якщо BTC у флеті (ADX < 20) або боковику (RSI 45-55) - не торгуємо!
+        if btc_adx < 20 or (45 < btc_rsi < 55):
             btc_allows_long = False
-        if btc_rsi > 60:
             btc_allows_short = False
+        # Старі умови
+        elif btc_rsi < 50:
+            btc_allows_long = False
+        elif btc_rsi > 60:
+            btc_allows_short = False
+    
+    # ⚡ ПОКРАЩЕННЯ 3: Перевірка 15m таймфрейму
+    tf15m_allows_long = True
+    tf15m_allows_short = True
+    if ema20_15m is not None and ema50_15m is not None:
+        # LONG тільки якщо на 15m також uptrend
+        if ema20_15m < ema50_15m:
+            tf15m_allows_long = False
+        # SHORT тільки якщо на 15m також downtrend
+        if ema20_15m > ema50_15m:
+            tf15m_allows_short = False
     
     # Сила тренду EMA
     ema_distance = abs(last['EMA20'] - last['EMA50']) / last['close']
     strong_trend = ema_distance > 0.003
     
-    # СТРАТЕГІЯ: 12 СТАРИХ + 3 НОВИХ + ЕТАП 1+2 = 17 ФІЛЬТРІВ!
+    # СТРАТЕГІЯ: 12 БАЗОВИХ + 3 ІМПУЛЬС + 2 КРИТИЧНІ + 2 ПОКРАЩЕННЯ = 19 ФІЛЬТРІВ!
     
-    # LONG умови (17 фільтрів):
+    # LONG умови (20 фільтрів):
     long_cond = (
         # === 12 СТАРИХ ФІЛЬТРІВ ===
         (last['EMA20'] > last['EMA50']) and          # 1. Uptrend
@@ -321,7 +337,7 @@ def signal_from_df(df, symbol="", btc_rsi=None):
         (last['MACD'] > 0) and                       # 8. MACD позитивний (ПОВЕРНУТО!)
         (last['close'] < last['BB_upper'] * 1.005) and # 9. ЕТАП 1: Breakout дозволено!
         ema200_long_allowed and                      # 10. EMA200 (ПОВЕРНУТО!)
-        btc_allows_long and                          # 11. BTC фільтр (ПОВЕРНУТО!)
+        btc_allows_long and                          # 11. BTC фільтр (ПОКРАЩЕНО!)
         (prev['close'] < last['close']) and          # 12. Candle confirmation
         # === 3 НОВИХ ФІЛЬТРИ ===
         (last['EMA5'] > last['EMA20']) and           # 13. НОВИЙ: Короткий імпульс!
@@ -331,10 +347,12 @@ def signal_from_df(df, symbol="", btc_rsi=None):
         (last['high'] > df['high'].iloc[-6:-1].max() if len(df) >= 6 else True) and  # 16. Новий HIGH!
         # === КРИТИЧНІ ФІЛЬТРИ (BUG FIX!) ===
         (atr_pct >= min_atr_percent) and             # 17. ATR адаптивний!
-        strong_trend                                 # 18. Сильний тренд EMA!
+        strong_trend and                             # 18. Сильний тренд EMA!
+        # === ПОКРАЩЕННЯ 3: 15m таймфрейм ===
+        tf15m_allows_long                            # 19. 15m uptrend!
     )
     
-    # SHORT умови (17 фільтрів + ATR + Strong_trend):
+    # SHORT умови (20 фільтрів):
     short_cond = (
         # === 12 СТАРИХ ФІЛЬТРІВ ===
         (last['EMA20'] < last['EMA50']) and          # 1. Downtrend
@@ -347,17 +365,19 @@ def signal_from_df(df, symbol="", btc_rsi=None):
         (last['MACD'] < 0) and                       # 8. MACD негативний (ПОВЕРНУТО!)
         (last['close'] > last['BB_lower'] * 0.995) and # 9. ЕТАП 1: Breakout дозволено!
         ema200_short_allowed and                     # 10. EMA200 (ПОВЕРНУТО!)
-        btc_allows_short and                         # 11. BTC фільтр (ПОВЕРНУТО!)
+        btc_allows_short and                         # 11. BTC фільтр (ПОКРАЩЕНО!)
         (prev['close'] > last['close']) and          # 12. Candle confirmation
         # === 3 НОВИХ ФІЛЬТРИ ===
         (last['EMA5'] < last['EMA20']) and           # 13. Короткий імпульс вниз!
         (last['RSI14'] < rsi_4bars_ago['RSI14'] - 3) and  # 14. RSI падає!
-        (last['ATR'] > atr_3bars_ago['ATR']) and     # 15. Волатильність зростає!
+        (last['ATR'] > atr_3bars_ago['ATR']) and     # 15. Волатільність зростає!
         # === ЕТАП 2 ===
         (last['low'] < df['low'].iloc[-6:-1].min() if len(df) >= 6 else True) and  # 16. Новий LOW!
         # === КРИТИЧНІ ФІЛЬТРИ (BUG FIX!) ===
         (atr_pct >= min_atr_percent) and             # 17. ATR адаптивний!
-        strong_trend                                 # 18. Сильний тренд EMA!
+        strong_trend and                             # 18. Сильний тренд EMA!
+        # === ПОКРАЩЕННЯ 3: 15m таймфрейм ===
+        tf15m_allows_short                           # 19. 15m downtrend!
     )
     
     # 🔍 DEBUG: Детальний розклад ВСІХ фільтрів (завжди показуємо!)
@@ -379,7 +399,8 @@ def signal_from_df(df, symbol="", btc_rsi=None):
             "15.ATR_growth": last['ATR'] > atr_3bars_ago['ATR'],
             "16.New_HIGH": last['high'] > df['high'].iloc[-6:-1].max() if len(df) >= 6 else True,
             "17.ATR_min": atr_pct >= min_atr_percent,
-            "18.Strong_trend": strong_trend
+            "18.Strong_trend": strong_trend,
+            "19.15m_uptrend": tf15m_allows_long
         }
     short_conditions = {
             "1.EMA20<EMA50": last['EMA20'] < last['EMA50'],
@@ -399,7 +420,8 @@ def signal_from_df(df, symbol="", btc_rsi=None):
             "15.ATR_growth": last['ATR'] > atr_3bars_ago['ATR'],
             "16.New_LOW": last['low'] < df['low'].iloc[-6:-1].min() if len(df) >= 6 else True,
             "17.ATR_min": atr_pct >= min_atr_percent,
-            "18.Strong_trend": strong_trend
+            "18.Strong_trend": strong_trend,
+            "19.15m_downtrend": tf15m_allows_short
         }
     
     # Показуємо які фільтри заблокували (завжди!)
@@ -414,10 +436,10 @@ def signal_from_df(df, symbol="", btc_rsi=None):
         print(f"   ⚠️ SIDEWAYS: EMA20 == EMA50 (немає тренду)")
     
     if long_cond:
-        print(f"   🚀 LONG SIGNAL! All 17 filters passed!")
+        print(f"   🚀 LONG SIGNAL! All 19 filters passed!")
         return "LONG"
     if short_cond:
-        print(f"   📉 SHORT SIGNAL! All 17 filters passed!")
+        print(f"   📉 SHORT SIGNAL! All 19 filters passed!")
         return "SHORT"
     return "NONE"
 
@@ -458,8 +480,14 @@ def set_leverage(symbol, value):
         if "110043" not in str(e):  # retCode 110043 = leverage already set
             print(f"Leverage warning {symbol}: {e}")
 
-def open_position(symbol, side):
-    """Відкриває позицію з TP/SL на біржі"""
+def open_position(symbol, side, atr=None):
+    """Відкриває позицію з TP/SL на біржі
+    
+    Args:
+        symbol: Символ токена
+        side: LONG або SHORT
+        atr: ATR значення для адаптивного TP/SL (якщо None - використовує фіксовані %)
+    """
     global last_balance_warning
     
     try:
@@ -480,9 +508,25 @@ def open_position(symbol, side):
         amount = calculate_amount(ORDER_SIZE_USDT, price, LEVERAGE)
         ccxt_side = 'buy' if side == "LONG" else 'sell'
         
-        # Розраховуємо TP/SL ціни
-        tp_price = price * (1 + TP_PERCENT/100) if side == "LONG" else price * (1 - TP_PERCENT/100)
-        sl_price = price * (1 - SL_PERCENT/100) if side == "LONG" else price * (1 + SL_PERCENT/100)
+        # ⚡ ПОКРАЩЕННЯ 1: Адаптивний TP/SL на базі ATR
+        if atr is not None and atr > 0:
+            # Динамічний TP/SL: TP = entry ± ATR×3, SL = entry ± ATR×1.5
+            if side == "LONG":
+                tp_price = price + (atr * 3.0)
+                sl_price = price - (atr * 1.5)
+            else:  # SHORT
+                tp_price = price - (atr * 3.0)
+                sl_price = price + (atr * 1.5)
+            
+            # Розраховуємо % для логування
+            tp_percent = abs((tp_price - price) / price * 100)
+            sl_percent = abs((sl_price - price) / price * 100)
+        else:
+            # Фіксовані % (fallback)
+            tp_price = price * (1 + TP_PERCENT/100) if side == "LONG" else price * (1 - TP_PERCENT/100)
+            sl_price = price * (1 - SL_PERCENT/100) if side == "LONG" else price * (1 + SL_PERCENT/100)
+            tp_percent = TP_PERCENT
+            sl_percent = SL_PERCENT
         
         # Встановлюємо плече
         set_leverage(symbol, LEVERAGE)
@@ -524,13 +568,15 @@ def open_position(symbol, side):
             tg_send(f"🚨 <b>КРИТИЧНА ПОМИЛКА!</b>\n\nTP/SL НЕ виставлено для {symbol}!\nПомилка: {str(e)}\n\n⚠️ ЗАКРИЙТЕ ПОЗИЦІЮ ВРУЧНУ!")
         
         # Надсилаємо повідомлення про відкриття
+        atr_mode = "ATR×3/1.5" if atr is not None else "Fixed"
         msg = f"""✅ <b>ПОЗИЦІЮ ВІДКРИТО</b>
 
 🔸 {symbol} {side}
 💰 Вхід: {price:.4f} USDT
 📊 Розмір: ${ORDER_SIZE_USDT} (×{LEVERAGE})
-🎯 TP: {tp_price:.4f} (+{TP_PERCENT}%)
-🛡 SL: {sl_price:.4f} (-{SL_PERCENT}%)"""
+🎯 TP: {tp_price:.4f} (+{tp_percent:.1f}%)
+🛡 SL: {sl_price:.4f} (-{sl_percent:.1f}%)
+⚡ Mode: {atr_mode}"""
         
         tg_send(msg)
         return True
@@ -566,15 +612,17 @@ def main_loop():
             # Обробляємо кнопки Telegram
             handle_telegram_callback()
             
-            # ПРО ФІЛЬТР: Отримуємо BTC RSI для альткоїнів
+            # ⚡ ПОКРАЩЕННЯ 2+3: Отримуємо BTC RSI + ADX для фільтра волатильності
             btc_rsi = None
+            btc_adx = None
             try:
                 btc_df = fetch_ohlcv_df("BTC/USDT:USDT")
                 btc_df = calculate_indicators(btc_df)
                 btc_rsi = btc_df.iloc[-1]['RSI14']
-                print(f"📊 BTC RSI: {btc_rsi:.1f}")
+                btc_adx = btc_df.iloc[-1]['ADX']
+                print(f"📊 BTC RSI: {btc_rsi:.1f} | ADX: {btc_adx:.1f}")
             except Exception as e:
-                print(f"⚠️ Не вдалось отримати BTC RSI: {e}")
+                print(f"⚠️ Не вдалось отримати BTC дані: {e}")
             
             # ВИПРАВЛЕНО: Кешуємо позиції 1 раз на цикл (було 151 запит!)
             cached_positions = get_open_positions_from_exchange()
@@ -588,10 +636,21 @@ def main_loop():
                 
                 try:
                     print(f"📊 Аналіз {symbol}...")
-                    df = fetch_ohlcv_df(symbol)
+                    df = fetch_ohlcv_df(symbol, timeframe=TIMEFRAME)
                     df = calculate_indicators(df)
                     
-                    # Детальні логи з DEBUG (17 фільтрів)
+                    # ⚡ ПОКРАЩЕННЯ 3: Отримуємо 15m таймфрейм для підтвердження
+                    ema20_15m = None
+                    ema50_15m = None
+                    try:
+                        df_15m = fetch_ohlcv_df(symbol, timeframe="15m", limit=100)
+                        df_15m = calculate_indicators(df_15m)
+                        ema20_15m = df_15m.iloc[-1]['EMA20']
+                        ema50_15m = df_15m.iloc[-1]['EMA50']
+                    except:
+                        pass  # Якщо не вдалось - пропускаємо (фільтр буде True)
+                    
+                    # Детальні логи з DEBUG (19 фільтрів)
                     last = df.iloc[-1]
                     prev = df.iloc[-2]
                     
@@ -604,23 +663,25 @@ def main_loop():
                     
                     print(f"   💰 Ціна: {last['close']:.4f}")
                     print(f"   📊 EMA: 5={last['EMA5']:.4f} | 20={last['EMA20']:.4f} | 50={last['EMA50']:.4f} | 200={last['EMA200']:.4f}")
+                    if ema20_15m and ema50_15m:
+                        print(f"   📊 15m EMA: 20={ema20_15m:.4f} | 50={ema50_15m:.4f} {'📈' if ema20_15m > ema50_15m else '📉'}")
                     print(f"   📉 RSI: {last['RSI14']:.1f} (need: 55-70 LONG, 30-45 SHORT)")
                     print(f"   💪 ADX: {last['ADX']:.1f} (need >30) {'✅' if last['ADX'] > 30 else '❌'}")
                     print(f"   🔥 ATR: {last['ATR']:.6f} = {atr_pct:.3f}% (need {min_atr_percent*100:.1f}%) {'✅' if atr_pct/100 >= min_atr_percent else '❌'}")
                     print(f"   📈 MACD: {last['MACD']:.6f} | Signal: {last['MACD_signal']:.6f} {'✅' if last['MACD'] > last['MACD_signal'] else '❌'}")
                     print(f"   💹 Volume: {vol_status} | volEMA20: {last['volEMA20']:.0f} (×1.5 = {last['volEMA20']*1.5:.0f}) {'✅' if last['volume'] > last['volEMA20']*1.5 else '❌'}")
                     
-                    sig = signal_from_df(df, symbol=symbol, btc_rsi=btc_rsi)
+                    sig = signal_from_df(df, symbol=symbol, btc_rsi=btc_rsi, btc_adx=btc_adx, ema20_15m=ema20_15m, ema50_15m=ema50_15m)
                     print(f"   ⚡ Сигнал: {sig}")
                     
                     if sig == "LONG" and can_open_new_position(symbol, cached_positions):
                         print(f"🚀 Відкриваю LONG {symbol}")
-                        open_position(symbol, "LONG")
+                        open_position(symbol, "LONG", atr=last['ATR'])
                         # Оновлюємо кеш після відкриття
                         cached_positions = get_open_positions_from_exchange()
                     elif sig == "SHORT" and can_open_new_position(symbol, cached_positions):
                         print(f"📉 Відкриваю SHORT {symbol}")
-                        open_position(symbol, "SHORT")
+                        open_position(symbol, "SHORT", atr=last['ATR'])
                         # Оновлюємо кеш після відкриття
                         cached_positions = get_open_positions_from_exchange()
                 except Exception as e:
