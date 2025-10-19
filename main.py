@@ -285,8 +285,13 @@ def signal_from_df(df, symbol="", btc_rsi=None, btc_adx=None, ema20_15m=None, em
     rsi_4bars_ago = df.iloc[-4] if len(df) >= 4 else df.iloc[0]
     atr_3bars_ago = df.iloc[-3] if len(df) >= 3 else df.iloc[0]
     
-    # Адаптивний ATR для мемкоїнів
-    min_atr_percent = 0.003 if last['close'] > 0.1 else 0.01
+    # Адаптивний ATR: великі монети (>$10) легше, малі - жорсткіше
+    if last['close'] > 10:
+        min_atr_percent = 0.002  # BTC, ETH, SOL - м'якше!
+    elif last['close'] > 0.1:
+        min_atr_percent = 0.003  # Звичайні монети
+    else:
+        min_atr_percent = 0.01   # Мемкоїни
     atr_pct = last['ATR'] / last['close'] if last['close'] > 0 else 0
     
     # EMA200 тренд
@@ -331,7 +336,7 @@ def signal_from_df(df, symbol="", btc_rsi=None, btc_adx=None, ema20_15m=None, em
         (last['close'] > last['EMA20']) and          # 2. Ціна вище EMA20
         (last['RSI14'] > 55) and                     # 3. RSI сильний
         (last['RSI14'] < 70) and                     # 4. RSI не перегрів
-        (last['volume'] > last['volEMA20'] * 1.3) and # 5. Обсяг ×1.3 (ВАРІАНТ A)
+        (last['volume'] > last['volEMA20'] * 1.25) and # 5. Обсяг ×1.25 (М'ЯКШЕ!)
         (last['ADX'] > 25) and                       # 6. СИЛЬНИЙ тренд (ВАРІАНТ A)
         (last['MACD'] > last['MACD_signal']) and     # 7. MACD кросовер
         (last['MACD'] > 0) and                       # 8. MACD позитивний (ПОВЕРНУТО!)
@@ -359,7 +364,7 @@ def signal_from_df(df, symbol="", btc_rsi=None, btc_adx=None, ema20_15m=None, em
         (last['close'] < last['EMA20']) and          # 2. Ціна нижче EMA20
         (last['RSI14'] < 45) and                     # 3. RSI слабкий
         (last['RSI14'] > 30) and                     # 4. RSI не перепродано
-        (last['volume'] > last['volEMA20'] * 1.3) and # 5. Обсяг ×1.3 (ВАРІАНТ A)
+        (last['volume'] > last['volEMA20'] * 1.25) and # 5. Обсяг ×1.25 (М'ЯКШЕ!)
         (last['ADX'] > 25) and                       # 6. СИЛЬНИЙ тренд (ВАРІАНТ A)
         (last['MACD'] < last['MACD_signal']) and     # 7. MACD кросовер
         (last['MACD'] < 0) and                       # 8. MACD негативний (ПОВЕРНУТО!)
@@ -386,7 +391,7 @@ def signal_from_df(df, symbol="", btc_rsi=None, btc_adx=None, ema20_15m=None, em
             "2.close>EMA20": last['close'] > last['EMA20'],
             "3.RSI>55": last['RSI14'] > 55,
             "4.RSI<70": last['RSI14'] < 70,
-            "5.Vol×1.3": last['volume'] > last['volEMA20'] * 1.3,
+            "5.Vol×1.25": last['volume'] > last['volEMA20'] * 1.25,
             "6.ADX>25": last['ADX'] > 25,
             "7.MACD_cross": last['MACD'] > last['MACD_signal'],
             "8.MACD>0": last['MACD'] > 0,
@@ -407,7 +412,7 @@ def signal_from_df(df, symbol="", btc_rsi=None, btc_adx=None, ema20_15m=None, em
             "2.close<EMA20": last['close'] < last['EMA20'],
             "3.RSI<45": last['RSI14'] < 45,
             "4.RSI>30": last['RSI14'] > 30,
-            "5.Vol×1.3": last['volume'] > last['volEMA20'] * 1.3,
+            "5.Vol×1.25": last['volume'] > last['volEMA20'] * 1.25,
             "6.ADX>25": last['ADX'] > 25,
             "7.MACD_cross": last['MACD'] < last['MACD_signal'],
             "8.MACD<0": last['MACD'] < 0,
@@ -509,7 +514,7 @@ def open_position(symbol, side, atr=None):
         ccxt_side = 'buy' if side == "LONG" else 'sell'
         
         # ⚡ ПОКРАЩЕННЯ 1: Адаптивний TP/SL на базі ATR з мінімумами
-        # Мінімуми: TP >= 1.5%, SL >= 0.5%
+        # Мінімуми: TP >= 1.5%, SL >= 0.5%, TP завжди >= SL × 2
         MIN_TP_PERCENT = 1.5
         MIN_SL_PERCENT = 0.5
         
@@ -519,12 +524,15 @@ def open_position(symbol, side, atr=None):
             atr_sl_distance = atr * 1.5
             
             # Мінімальні відстані в абсолютних значеннях
-            min_tp_distance = price * (MIN_TP_PERCENT / 100)
             min_sl_distance = price * (MIN_SL_PERCENT / 100)
             
-            # Використовуємо максимум з ATR та мінімуму
-            tp_distance = max(atr_tp_distance, min_tp_distance)
+            # SL = максимум з ATR×1.5 або мінімуму 0.5%
             sl_distance = max(atr_sl_distance, min_sl_distance)
+            
+            # TP = максимум з (ATR×3, SL×2, мінімум 1.5%)
+            min_tp_by_ratio = sl_distance * 2  # TP завжди >= SL × 2
+            min_tp_distance = price * (MIN_TP_PERCENT / 100)
+            tp_distance = max(atr_tp_distance, min_tp_by_ratio, min_tp_distance)
             
             if side == "LONG":
                 tp_price = price + tp_distance
